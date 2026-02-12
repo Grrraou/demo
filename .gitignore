@@ -16,3 +16,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# pgAdmin generated from .env (server list; password is in container env only)
+docker/pgadmin/servers.json

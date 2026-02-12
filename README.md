@@ -53,6 +53,9 @@ Production-ready ERP backend: Laravel 11, PHP 8.2+, PostgreSQL, Redis, Blade, Li
 | `make rollback`| Rollback last migration batch            |
 | `make seed`   | Run seeders (demo data, mocks, imports)  |
 | `make fresh`  | `migrate:fresh --seed` (drop all + migrate + seed) |
+| `make backup` | PostgreSQL dump to `backup_YYYYMMDD_HHMMSS.sql`   |
+| `make pgmyadmin` | Start Postgres + pgAdmin (UI on `PGADMIN_PORT`) |
+| `make pgmyadmin-logs` | Show pgAdmin container logs (if it exits) |
 | `make restart`| Restart containers                       |
 | `make stop`   | Stop containers                          |
 | `make destroy`| Down + remove volumes (asks confirm)     |
@@ -127,6 +130,8 @@ Fields: `name`, `email`, `phone`, `address`.
 - **Dev:** `docker-compose.yml` – app code mounted as volume.
 - **Prod:** `docker-compose.prod.yml` – no host volume; code is in the image (build context).
 
+**pgAdmin** (optional): `make pgmyadmin` starts Postgres + pgAdmin and **pre-configures a server** from your `.env` (`DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`). Open http://localhost:8282 (or `PGADMIN_PORT`), log in with `PGADMIN_DEFAULT_EMAIL` / `PGADMIN_DEFAULT_PASSWORD`. The server appears as your `APP_NAME`; no need to add it manually.
+
 ## Migrations and seeds
 
 - **Migrations** (`database/migrations/`): schema only — create/alter tables, indexes. No demo or import data.
@@ -138,3 +143,4 @@ Commands:
 - `make rollback` – rollback last migration batch
 - `make seed` – run seeders (data)
 - `make fresh` – drop all tables, migrate, then seed (full reset)
+- `make backup` – dump DB to `backup_YYYYMMDD_HHMMSS.sql` in project root
