@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Employee: ' . $employee->name)
+@section('title', 'Team member: ' . $teamMember->name)
 
 @section('content')
 <div class="py-12">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <a href="{{ route('admin.employees.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Manage employees</a>
+            <a href="{{ route('admin.team-members.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Team members</a>
         </div>
 
         @if (session('success'))
@@ -17,9 +17,9 @@
         @endif
 
         <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
-            <h1 class="text-xl font-bold text-gray-900 mb-6">Employee details</h1>
+            <h1 class="text-xl font-bold text-gray-900 mb-6">Team member details</h1>
 
-            <form action="{{ route('admin.employees.update', $employee) }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.team-members.update', $teamMember) }}" method="POST" class="space-y-4">
                 @csrf
                 @method('PUT')
                 @if ($errors->any())
@@ -31,12 +31,12 @@
                 @endif
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name', $employee->name) }}" required
+                    <input type="text" name="name" id="name" value="{{ old('name', $teamMember->name) }}" required
                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="email" value="{{ old('email', $employee->email) }}" required
+                    <input type="email" name="email" id="email" value="{{ old('email', $teamMember->email) }}" required
                            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
@@ -56,7 +56,7 @@
                         @forelse ($roles as $role)
                             <label class="inline-flex items-center cursor-pointer" title="{{ $role->permissions->pluck('name')->join(', ') ?: 'No permissions' }}">
                                 <input type="checkbox" name="role_ids[]" value="{{ $role->id }}"
-                                       {{ $employee->roles->contains($role) ? 'checked' : '' }}
+                                       {{ $teamMember->roles->contains($role) ? 'checked' : '' }}
                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-700">{{ $role->name }}</span>
                                 <span class="ml-1 text-xs text-gray-500">({{ $role->slug }})</span>
@@ -72,7 +72,7 @@
                         @forelse ($ownedCompanies as $company)
                             <label class="inline-flex items-center">
                                 <input type="checkbox" name="owned_company_ids[]" value="{{ $company->id }}"
-                                       {{ $employee->ownedCompanies->contains($company) ? 'checked' : '' }}
+                                       {{ $teamMember->ownedCompanies->contains($company) ? 'checked' : '' }}
                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                                 <span class="ml-2 text-sm text-gray-700">{{ $company->name }}</span>
                                 <span class="ml-1 text-xs text-gray-500">({{ $company->slug }})</span>
@@ -92,15 +92,15 @@
             <hr class="my-8 border-gray-200">
 
             <div>
-                <h2 class="text-sm font-semibold text-gray-900 mb-2">Delete employee</h2>
-                @if ($employee->id === auth()->id())
+                <h2 class="text-sm font-semibold text-gray-900 mb-2">Delete team member</h2>
+                @if ($teamMember->id === auth()->id())
                     <p class="text-sm text-gray-500">You cannot delete your own account.</p>
                 @else
-                    <form action="{{ route('admin.employees.destroy', $employee) }}" method="POST" onsubmit="return confirm('Delete this employee?');">
+                    <form action="{{ route('admin.team-members.destroy', $teamMember) }}" method="POST" onsubmit="return confirm('Delete this team member?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700">
-                            Delete employee
+                            Delete team member
                         </button>
                     </form>
                 @endif

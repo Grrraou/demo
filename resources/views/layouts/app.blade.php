@@ -72,7 +72,7 @@
                                     </button>
                                     <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                         <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
-                                            <a href="{{ route('admin.employees.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Employees</a>
+                                            <a href="{{ route('admin.team-members.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Team members</a>
                                             <a href="{{ route('admin.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Companies</a>
                                         </div>
                                     </div>

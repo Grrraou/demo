@@ -11,7 +11,7 @@ class Article extends Model
 
     protected $fillable = [
         'owned_company_id',
-        'author_id',
+        'team_member_id',
         'name',
         'slug',
         'keywords',
@@ -39,7 +39,7 @@ class Article extends Model
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(Employee::class, 'author_id');
+        return $this->belongsTo(TeamMember::class, 'team_member_id');
     }
 
     public function imageUrl(): ?string

@@ -3,30 +3,30 @@
 return [
     'defaults' => [
         'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'employees'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'team_members'),
     ],
 
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'employees',
+            'provider' => 'team_members',
         ],
         'sanctum' => [
             'driver' => 'sanctum',
-            'provider' => 'employees',
+            'provider' => 'team_members',
         ],
     ],
 
     'providers' => [
-        'employees' => [
+        'team_members' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\Employee::class),
+            'model' => env('AUTH_MODEL', App\Models\TeamMember::class),
         ],
     ],
 
     'passwords' => [
-        'employees' => [
-            'provider' => 'employees',
+        'team_members' => [
+            'provider' => 'team_members',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,

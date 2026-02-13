@@ -16,9 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureEmployeeIsAdmin::class,
-            'edit.customers' => \App\Http\Middleware\EnsureEmployeeCanEditCustomers::class,
-            'manage.articles' => \App\Http\Middleware\EnsureEmployeeCanManageArticles::class,
+            'admin' => \App\Http\Middleware\EnsureTeamMemberIsAdmin::class,
+            'edit.customers' => \App\Http\Middleware\EnsureTeamMemberCanEditCustomers::class,
+            'manage.articles' => \App\Http\Middleware\EnsureTeamMemberCanManageArticles::class,
             'current.company' => \App\Http\Middleware\EnsureCurrentOwnedCompany::class,
         ]);
         $middleware->web(append: [\App\Http\Middleware\EnsureCurrentOwnedCompany::class]);

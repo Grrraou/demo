@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('owned_company_id')->constrained('owned_companies')->cascadeOnDelete();
-            $table->foreignId('author_id')->constrained('employees')->nullOnDelete();
+            $table->foreignId('team_member_id')->constrained('team_members')->nullOnDelete();
             $table->string('name');
             $table->string('slug');
             $table->json('keywords')->nullable(); // array of strings

@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('role_employee', function (Blueprint $table) {
+        Schema::create('role_team_member', function (Blueprint $table) {
             $table->id();
             $table->foreignId('role_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('team_member_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
 
-            $table->unique(['role_id', 'employee_id']);
+            $table->unique(['role_id', 'team_member_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('role_employee');
+        Schema::dropIfExists('role_team_member');
     }
 };

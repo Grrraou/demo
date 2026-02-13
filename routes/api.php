@@ -21,6 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('roles', [AdminApiController::class, 'roles'])->name('admin.roles');
-        Route::apiResource('employees', AdminApiController::class)->only(['index', 'show', 'update', 'destroy']);
+        Route::apiResource('team-members', AdminApiController::class)->only(['index', 'show', 'update', 'destroy']);
     });
 });

@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Manage employees')
+@section('title', 'Team members')
 
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Manage employees</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Team members</h1>
             <a href="{{ route('home') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Home</a>
         </div>
 
@@ -28,27 +28,27 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($employees as $employee)
+                    @forelse ($teamMembers as $teamMember)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $employee->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $employee->email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $teamMember->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $teamMember->email }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {{ $employee->roles->pluck('name')->join(', ') ?: '—' }}
+                                {{ $teamMember->roles->pluck('name')->join(', ') ?: '—' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                <a href="{{ route('admin.employees.show', $employee) }}" class="text-indigo-600 hover:text-indigo-800">View</a>
+                                <a href="{{ route('admin.team-members.show', $teamMember) }}" class="text-indigo-600 hover:text-indigo-800">View</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">No employees.</td>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">No team members.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-            @if ($employees->hasPages())
+            @if ($teamMembers->hasPages())
                 <div class="px-6 py-3 border-t border-gray-200">
-                    {{ $employees->links() }}
+                    {{ $teamMembers->links() }}
                 </div>
             @endif
         </div>

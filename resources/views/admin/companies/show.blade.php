@@ -18,7 +18,7 @@
 
         <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
             <h1 class="text-xl font-bold text-gray-900 mb-6">Company details</h1>
-            <p class="text-sm text-gray-500 mb-6">Employees with access: {{ $ownedCompany->employees_count ?? 0 }}</p>
+            <p class="text-sm text-gray-500 mb-6">Team members with access: {{ $ownedCompany->team_members_count ?? 0 }}</p>
 
             <form action="{{ route('admin.companies.update', $ownedCompany) }}" method="POST" class="space-y-4" enctype="multipart/form-data">
                 @csrf

@@ -6,16 +6,16 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class DemoEmployeesSeeder extends Seeder
+class DemoTeamMembersSeeder extends Seeder
 {
     private const DEMO_PASSWORD = 'password';
 
-    private const DEMO_EMPLOYEES = [
+    private const DEMO_TEAM_MEMBERS = [
         ['name' => 'Admin One', 'email' => 'admin1@demo.test'],
         ['name' => 'Admin Two', 'email' => 'admin2@demo.test'],
-        ['name' => 'Demo Employee One', 'email' => 'user1@demo.test'],
-        ['name' => 'Demo Employee Two', 'email' => 'user2@demo.test'],
-        ['name' => 'Demo Employee Three', 'email' => 'user3@demo.test'],
+        ['name' => 'Demo Team Member One', 'email' => 'user1@demo.test'],
+        ['name' => 'Demo Team Member Two', 'email' => 'user2@demo.test'],
+        ['name' => 'Demo Team Member Three', 'email' => 'user3@demo.test'],
     ];
 
     public function run(): void
@@ -48,12 +48,12 @@ class DemoEmployeesSeeder extends Seeder
         ]);
 
         $password = Hash::make(self::DEMO_PASSWORD);
-        $employeeIds = [];
+        $teamMemberIds = [];
 
-        foreach (self::DEMO_EMPLOYEES as $employee) {
-            $employeeIds[] = DB::table('employees')->insertGetId([
-                'name' => $employee['name'],
-                'email' => $employee['email'],
+        foreach (self::DEMO_TEAM_MEMBERS as $member) {
+            $teamMemberIds[] = DB::table('team_members')->insertGetId([
+                'name' => $member['name'],
+                'email' => $member['email'],
                 'password' => $password,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -61,9 +61,9 @@ class DemoEmployeesSeeder extends Seeder
         }
 
         foreach ([0, 1] as $index) {
-            DB::table('role_employee')->insert([
+            DB::table('role_team_member')->insert([
                 'role_id' => $adminRoleId,
-                'employee_id' => $employeeIds[$index],
+                'team_member_id' => $teamMemberIds[$index],
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

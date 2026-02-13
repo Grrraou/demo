@@ -28,7 +28,7 @@ class AdminCompanyController extends Controller
 
     public function show(OwnedCompany $ownedCompany): View
     {
-        $ownedCompany->loadCount('employees');
+        $ownedCompany->loadCount('teamMembers');
 
         return view('admin.companies.show', compact('ownedCompany'));
     }

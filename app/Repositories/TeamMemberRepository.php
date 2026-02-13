@@ -2,27 +2,27 @@
 
 namespace App\Repositories;
 
-use App\Models\Employee;
+use App\Models\TeamMember;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class EmployeeRepository
+class TeamMemberRepository
 {
     public function __construct(
-        private Employee $model
+        private TeamMember $model
     ) {}
 
-    public function findByEmail(string $email): ?Employee
+    public function findByEmail(string $email): ?TeamMember
     {
         return $this->model->newQuery()->where('email', $email)->first();
     }
 
-    public function create(array $data): Employee
+    public function create(array $data): TeamMember
     {
         return $this->model->newQuery()->create($data);
     }
 
-    public function find(int $id): ?Employee
+    public function find(int $id): ?TeamMember
     {
         return $this->model->newQuery()->find($id);
     }
@@ -37,13 +37,13 @@ class EmployeeRepository
         return $this->model->newQuery()->with('roles')->orderBy('name')->paginate($perPage);
     }
 
-    public function update(Employee $employee, array $data): bool
+    public function update(TeamMember $teamMember, array $data): bool
     {
-        return $employee->update($data);
+        return $teamMember->update($data);
     }
 
-    public function delete(Employee $employee): bool
+    public function delete(TeamMember $teamMember): bool
     {
-        return $employee->delete();
+        return $teamMember->delete();
     }
 }

@@ -8,16 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Employee extends Authenticatable
+class TeamMember extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $table = 'employees';
-
-    protected static function newFactory(): \Database\Factories\EmployeeFactory
-    {
-        return \Database\Factories\EmployeeFactory::new();
-    }
+    protected $table = 'team_members';
 
     protected $fillable = [
         'name',
@@ -40,12 +35,12 @@ class Employee extends Authenticatable
 
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class, 'role_employee');
+        return $this->belongsToMany(Role::class, 'role_team_member');
     }
 
     public function ownedCompanies(): BelongsToMany
     {
-        return $this->belongsToMany(OwnedCompany::class, 'owned_company_employee');
+        return $this->belongsToMany(OwnedCompany::class, 'owned_company_team_member');
     }
 
     public function hasPermission(string $slug): bool

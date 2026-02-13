@@ -41,7 +41,7 @@ class ArticleController extends Controller
         $article = new Article([
             'draft' => true,
             'owned_company_id' => $ownedCompanyId,
-            'author_id' => $request->user()->id,
+            'team_member_id' => $request->user()->id,
         ]);
 
         return view('blog.articles.edit', [
@@ -63,7 +63,7 @@ class ArticleController extends Controller
         $validated = $this->validateArticle($request, $ownedCompanyId);
         unset($validated['image']);
         $validated['owned_company_id'] = $ownedCompanyId;
-        $validated['author_id'] = $request->user()->id;
+        $validated['team_member_id'] = $request->user()->id;
         $validated['draft'] = true;
         $validated['public'] = $request->boolean('public');
         $validated['published_at'] = null;

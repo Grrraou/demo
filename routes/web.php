@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\Admin\AdminCompanyController;
-use App\Http\Controllers\Web\Admin\AdminEmployeeController;
+use App\Http\Controllers\Web\Admin\AdminTeamMemberController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\Blog\ArticleController as BlogArticleController;
 use App\Http\Controllers\Web\Customers\CustomerCompanyController;
@@ -45,10 +45,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/employees', [AdminEmployeeController::class, 'index'])->name('employees.index');
-    Route::get('/employees/{employee}', [AdminEmployeeController::class, 'show'])->name('employees.show');
-    Route::put('/employees/{employee}', [AdminEmployeeController::class, 'update'])->name('employees.update');
-    Route::delete('/employees/{employee}', [AdminEmployeeController::class, 'destroy'])->name('employees.destroy');
+    Route::get('/team-members', [AdminTeamMemberController::class, 'index'])->name('team-members.index');
+    Route::get('/team-members/{teamMember}', [AdminTeamMemberController::class, 'show'])->name('team-members.show');
+    Route::put('/team-members/{teamMember}', [AdminTeamMemberController::class, 'update'])->name('team-members.update');
+    Route::delete('/team-members/{teamMember}', [AdminTeamMemberController::class, 'destroy'])->name('team-members.destroy');
 
     Route::get('/companies', [AdminCompanyController::class, 'index'])->name('companies.index');
     Route::get('/companies/{ownedCompany}', [AdminCompanyController::class, 'show'])->name('companies.show');

@@ -10,8 +10,8 @@ class BlogArticlesSeeder extends Seeder
     public function run(): void
     {
         $companyIds = DB::table('owned_companies')->orderBy('id')->pluck('id')->toArray();
-        $authorIds = DB::table('employees')->orderBy('id')->pluck('id')->toArray();
-        if (empty($companyIds) || empty($authorIds)) {
+        $teamMemberIds = DB::table('team_members')->orderBy('id')->pluck('id')->toArray();
+        if (empty($companyIds) || empty($teamMemberIds)) {
             return;
         }
 
@@ -20,7 +20,7 @@ class BlogArticlesSeeder extends Seeder
 
         foreach ($articles as $def) {
             $companyId = $companyIds[$def['company_index'] % count($companyIds)];
-            $authorId = $authorIds[$def['author_index'] % count($authorIds)];
+            $teamMemberId = $teamMemberIds[$def['author_index'] % count($teamMemberIds)];
 
             if (DB::table('articles')->where('owned_company_id', $companyId)->where('slug', $def['slug'])->exists()) {
                 continue;
@@ -28,7 +28,7 @@ class BlogArticlesSeeder extends Seeder
 
             DB::table('articles')->insert([
                 'owned_company_id' => $companyId,
-                'author_id' => $authorId,
+                'team_member_id' => $teamMemberId,
                 'name' => $def['name'],
                 'slug' => $def['slug'],
                 'keywords' => json_encode($def['keywords']),
