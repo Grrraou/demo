@@ -65,4 +65,16 @@ class TeamMember extends Authenticatable
         return $this->roles()->where('slug', 'admin')->exists()
             || $this->hasPermission('edit.articles');
     }
+
+    public function canViewInventory(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.inventory');
+    }
+
+    public function canEditInventory(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.inventory');
+    }
 }

@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureTeamMemberIsAdmin::class,
             'edit.customers' => \App\Http\Middleware\EnsureTeamMemberCanEditCustomers::class,
             'manage.articles' => \App\Http\Middleware\EnsureTeamMemberCanManageArticles::class,
+            'view.inventory' => \App\Http\Middleware\EnsureTeamMemberCanViewInventory::class,
+            'edit.inventory' => \App\Http\Middleware\EnsureTeamMemberCanEditInventory::class,
             'current.company' => \App\Http\Middleware\EnsureCurrentOwnedCompany::class,
         ]);
         $middleware->web(append: [\App\Http\Middleware\EnsureCurrentOwnedCompany::class]);

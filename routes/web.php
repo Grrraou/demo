@@ -7,6 +7,12 @@ use App\Http\Controllers\Web\Blog\ArticleController as BlogArticleController;
 use App\Http\Controllers\Web\Customers\CustomerCompanyController;
 use App\Http\Controllers\Web\Customers\CustomerContactController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\Inventory\CategoryController as InventoryCategoryController;
+use App\Http\Controllers\Web\Inventory\ProductController as InventoryProductController;
+use App\Http\Controllers\Web\Inventory\StockController as InventoryStockController;
+use App\Http\Controllers\Web\Inventory\StockLocationController as InventoryStockLocationController;
+use App\Http\Controllers\Web\Inventory\SupplierController as InventorySupplierController;
+use App\Http\Controllers\Web\Inventory\UnitController as InventoryUnitController;
 use App\Http\Controllers\Web\OwnedCompanySwitchController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +23,39 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/current-company', [OwnedCompanySwitchController::class, 'switch'])->name('current-company.switch');
-    
+
+    Route::middleware(['view.inventory'])->prefix('inventory')->name('inventory.')->group(function () {
+        Route::get('/products', [InventoryProductController::class, 'index'])->name('products.index');
+        Route::get('/categories', [InventoryCategoryController::class, 'index'])->name('categories.index');
+        Route::get('/suppliers', [InventorySupplierController::class, 'index'])->name('suppliers.index');
+        Route::get('/stock-locations', [InventoryStockLocationController::class, 'index'])->name('stock-locations.index');
+        Route::get('/stocks', [InventoryStockController::class, 'index'])->name('stocks.index');
+        Route::get('/units', [InventoryUnitController::class, 'index'])->name('units.index');
+
+        Route::middleware(['edit.inventory'])->group(function () {
+            Route::get('/products/create', [InventoryProductController::class, 'create'])->name('products.create');
+            Route::post('/products', [InventoryProductController::class, 'store'])->name('products.store');
+            Route::get('/products/{product}/edit', [InventoryProductController::class, 'edit'])->name('products.edit');
+            Route::put('/products/{product}', [InventoryProductController::class, 'update'])->name('products.update');
+            Route::get('/categories/create', [InventoryCategoryController::class, 'create'])->name('categories.create');
+            Route::post('/categories', [InventoryCategoryController::class, 'store'])->name('categories.store');
+            Route::get('/categories/{category}/edit', [InventoryCategoryController::class, 'edit'])->name('categories.edit');
+            Route::put('/categories/{category}', [InventoryCategoryController::class, 'update'])->name('categories.update');
+            Route::get('/suppliers/create', [InventorySupplierController::class, 'create'])->name('suppliers.create');
+            Route::post('/suppliers', [InventorySupplierController::class, 'store'])->name('suppliers.store');
+            Route::get('/suppliers/{supplier}/edit', [InventorySupplierController::class, 'edit'])->name('suppliers.edit');
+            Route::put('/suppliers/{supplier}', [InventorySupplierController::class, 'update'])->name('suppliers.update');
+            Route::get('/stock-locations/create', [InventoryStockLocationController::class, 'create'])->name('stock-locations.create');
+            Route::post('/stock-locations', [InventoryStockLocationController::class, 'store'])->name('stock-locations.store');
+            Route::get('/stock-locations/{stockLocation}/edit', [InventoryStockLocationController::class, 'edit'])->name('stock-locations.edit');
+            Route::put('/stock-locations/{stockLocation}', [InventoryStockLocationController::class, 'update'])->name('stock-locations.update');
+            Route::get('/units/create', [InventoryUnitController::class, 'create'])->name('units.create');
+            Route::post('/units', [InventoryUnitController::class, 'store'])->name('units.store');
+            Route::get('/units/{unit}/edit', [InventoryUnitController::class, 'edit'])->name('units.edit');
+            Route::put('/units/{unit}', [InventoryUnitController::class, 'update'])->name('units.update');
+        });
+    });
+
     Route::prefix('customers')->name('customers.')->group(function () {
         Route::get('/companies', [CustomerCompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/{customerCompany}', [CustomerCompanyController::class, 'show'])->name('companies.show');

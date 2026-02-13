@@ -52,6 +52,24 @@
                             @if (auth()->user()->canCreateArticles() || auth()->user()->canEditArticles())
                                 <a href="{{ route('blog.articles.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Blog</a>
                             @endif
+                            @if (auth()->user()->canViewInventory())
+                                <div class="relative group">
+                                    <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                        Inventory
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
+                                        <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[160px]">
+<a href="{{ route('inventory.products.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Products</a>
+                                        <a href="{{ route('inventory.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Categories</a>
+                                        <a href="{{ route('inventory.units.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Units</a>
+                                        <a href="{{ route('inventory.suppliers.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Suppliers</a>
+                                        <a href="{{ route('inventory.stock-locations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Locations</a>
+                                        <a href="{{ route('inventory.stocks.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Stock</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="relative group">
                                 <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
                                     Customers

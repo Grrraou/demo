@@ -12,9 +12,11 @@ class DatabaseSeeder extends Seeder
             DemoTeamMembersSeeder::class,
             EditCustomersPermissionSeeder::class,
             BlogPermissionSeeder::class,
+            InventoryPermissionSeeder::class,
             OwnedCompaniesSeeder::class,
             CustomerCompaniesSeeder::class,
             BlogArticlesSeeder::class,
+            InventorySeeder::class,
         ]);
     }
 }
