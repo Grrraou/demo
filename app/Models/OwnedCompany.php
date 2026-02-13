@@ -31,4 +31,9 @@ class OwnedCompany extends Model
     {
         return $this->belongsToMany(User::class, 'owned_company_user');
     }
+
+    public function customerCompanies(): BelongsToMany
+    {
+        return $this->belongsToMany(CustomerCompany::class, 'customer_company_owned_company');
+    }
 }

@@ -40,4 +40,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(OwnedCompany::class, 'owned_company_user');
     }
+
+    public function hasPermission(string $slug): bool
+    {
+        return $this->roles()->whereHas('permissions', fn ($q) => $q->where('slug', $slug))->exists();
+    }
+
+    public function canEditCustomers(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.customers');
+    }
 }

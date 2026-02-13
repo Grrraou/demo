@@ -3,6 +3,8 @@
 use App\Http\Controllers\Web\Admin\AdminCompanyController;
 use App\Http\Controllers\Web\Admin\AdminController;
 use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\CustomerCompanyController;
+use App\Http\Controllers\Web\CustomerContactController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\OwnedCompanySwitchController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +16,16 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/current-company', [OwnedCompanySwitchController::class, 'switch'])->name('current-company.switch');
+    Route::get('/customers', [CustomerCompanyController::class, 'index'])->name('customers.index');
+    Route::get('/customers/{customerCompany}', [CustomerCompanyController::class, 'show'])->name('customers.show');
+    Route::get('/contacts', [CustomerContactController::class, 'index'])->name('contacts.index');
+
+    Route::middleware(['edit.customers'])->group(function () {
+        Route::get('/customers/{customerCompany}/edit', [CustomerCompanyController::class, 'edit'])->name('customers.edit');
+        Route::put('/customers/{customerCompany}', [CustomerCompanyController::class, 'update'])->name('customers.update');
+        Route::get('/contacts/{customerContact}/edit', [CustomerContactController::class, 'edit'])->name('contacts.edit');
+        Route::put('/contacts/{customerContact}', [CustomerContactController::class, 'update'])->name('contacts.update');
+    });
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

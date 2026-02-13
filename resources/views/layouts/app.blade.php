@@ -49,6 +49,8 @@
                             @endif
                         </div>
                         <nav class="flex items-center gap-4">
+                            <a href="{{ route('customers.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Customers</a>
+                            <a href="{{ route('contacts.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Contacts</a>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                                 <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Users</a>
                                 <a href="{{ route('admin.companies.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Companies</a>
