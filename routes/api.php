@@ -12,6 +12,11 @@ use App\Http\Controllers\Api\Inventory\StockLocationController as InventoryStock
 use App\Http\Controllers\Api\Inventory\StockMovementController as InventoryStockMovementController;
 use App\Http\Controllers\Api\Inventory\SupplierController as InventorySupplierController;
 use App\Http\Controllers\Api\Inventory\UnitController as InventoryUnitController;
+use App\Http\Controllers\Api\Sales\DeliveryController as SalesDeliveryController;
+use App\Http\Controllers\Api\Sales\InvoiceController as SalesInvoiceController;
+use App\Http\Controllers\Api\Sales\PaymentController as SalesPaymentController;
+use App\Http\Controllers\Api\Sales\QuoteController as SalesQuoteController;
+use App\Http\Controllers\Api\Sales\SalesOrderController as SalesOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -76,5 +81,26 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('units/{unit}', [InventoryUnitController::class, 'update'])->name('units.update');
             Route::delete('units/{unit}', [InventoryUnitController::class, 'destroy'])->name('units.destroy');
         });
+    });
+
+    // Sales module
+    Route::prefix('sales')->name('sales.')->group(function () {
+        Route::post('quotes/{quote}/send', [SalesQuoteController::class, 'send'])->name('quotes.send');
+        Route::post('quotes/{quote}/accept', [SalesQuoteController::class, 'accept'])->name('quotes.accept');
+        Route::post('quotes/{quote}/reject', [SalesQuoteController::class, 'reject'])->name('quotes.reject');
+        Route::apiResource('quotes', SalesQuoteController::class)->only(['index', 'store', 'show']);
+
+        Route::post('orders/{salesOrder}/reserve-stock', [SalesOrderController::class, 'reserveStock'])->name('orders.reserve-stock');
+        Route::apiResource('orders', SalesOrderController::class)->only(['index', 'store', 'show'])->parameters(['orders' => 'salesOrder']);
+
+        Route::post('deliveries/{delivery}/mark-delivered', [SalesDeliveryController::class, 'markDelivered'])->name('deliveries.mark-delivered');
+        Route::apiResource('deliveries', SalesDeliveryController::class)->only(['index', 'store', 'show']);
+
+        Route::post('invoices/{invoice}/mark-sent', [SalesInvoiceController::class, 'markSent'])->name('invoices.mark-sent');
+        Route::post('invoices/{invoice}/mark-paid', [SalesInvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
+        Route::apiResource('invoices', SalesInvoiceController::class)->only(['index', 'store', 'show']);
+
+        Route::post('payments', [SalesPaymentController::class, 'store'])->name('payments.store');
+        Route::get('payments/{payment}', [SalesPaymentController::class, 'show'])->name('payments.show');
     });
 });

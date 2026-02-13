@@ -14,6 +14,10 @@ use App\Http\Controllers\Web\Inventory\StockLocationController as InventoryStock
 use App\Http\Controllers\Web\Inventory\SupplierController as InventorySupplierController;
 use App\Http\Controllers\Web\Inventory\UnitController as InventoryUnitController;
 use App\Http\Controllers\Web\OwnedCompanySwitchController;
+use App\Http\Controllers\Web\Sales\DeliveryController as SalesDeliveryController;
+use App\Http\Controllers\Web\Sales\InvoiceController as SalesInvoiceController;
+use App\Http\Controllers\Web\Sales\QuoteController as SalesQuoteController;
+use App\Http\Controllers\Web\Sales\SalesOrderController as SalesOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -67,6 +71,34 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/contacts/{customerContact}/edit', [CustomerContactController::class, 'edit'])->name('contacts.edit');
             Route::put('/contacts/{customerContact}', [CustomerContactController::class, 'update'])->name('contacts.update');
         });
+    });
+
+    Route::prefix('sales')->name('sales.')->group(function () {
+        Route::get('/quotes', [SalesQuoteController::class, 'index'])->name('quotes.index');
+        Route::get('/quotes/create', [SalesQuoteController::class, 'create'])->name('quotes.create');
+        Route::post('/quotes', [SalesQuoteController::class, 'store'])->name('quotes.store');
+        Route::get('/quotes/{quote}', [SalesQuoteController::class, 'show'])->name('quotes.show');
+        Route::get('/quotes/{quote}/edit', [SalesQuoteController::class, 'edit'])->name('quotes.edit');
+        Route::put('/quotes/{quote}', [SalesQuoteController::class, 'update'])->name('quotes.update');
+
+        Route::get('/orders', [SalesOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/create', [SalesOrderController::class, 'create'])->name('orders.create');
+        Route::post('/orders', [SalesOrderController::class, 'store'])->name('orders.store');
+        Route::get('/orders/{order}', [SalesOrderController::class, 'show'])->name('orders.show');
+        Route::get('/orders/{order}/edit', [SalesOrderController::class, 'edit'])->name('orders.edit');
+        Route::put('/orders/{order}', [SalesOrderController::class, 'update'])->name('orders.update');
+
+        Route::get('/deliveries', [SalesDeliveryController::class, 'index'])->name('deliveries.index');
+        Route::get('/deliveries/create', [SalesDeliveryController::class, 'create'])->name('deliveries.create');
+        Route::post('/deliveries', [SalesDeliveryController::class, 'store'])->name('deliveries.store');
+        Route::get('/deliveries/{delivery}', [SalesDeliveryController::class, 'show'])->name('deliveries.show');
+
+        Route::get('/invoices', [SalesInvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('/invoices/create', [SalesInvoiceController::class, 'create'])->name('invoices.create');
+        Route::post('/invoices', [SalesInvoiceController::class, 'store'])->name('invoices.store');
+        Route::get('/invoices/{invoice}', [SalesInvoiceController::class, 'show'])->name('invoices.show');
+        Route::get('/invoices/{invoice}/edit', [SalesInvoiceController::class, 'edit'])->name('invoices.edit');
+        Route::put('/invoices/{invoice}', [SalesInvoiceController::class, 'update'])->name('invoices.update');
     });
 
     Route::middleware(['manage.articles'])->prefix('blog')->name('blog.')->group(function () {

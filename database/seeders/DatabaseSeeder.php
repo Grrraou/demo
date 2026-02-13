@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             CustomerCompaniesSeeder::class,
             BlogArticlesSeeder::class,
             InventorySeeder::class,
+            SalesSeeder::class,
         ]);
     }
 }
