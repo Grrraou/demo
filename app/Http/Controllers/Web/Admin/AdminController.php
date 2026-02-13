@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Managers\OwnedCompanyManager;
 use App\Managers\RoleManager;
 use App\Managers\UserManager;
 use App\Models\User;
@@ -14,7 +15,8 @@ class AdminController extends Controller
 {
     public function __construct(
         private UserManager $userManager,
-        private RoleManager $roleManager
+        private RoleManager $roleManager,
+        private OwnedCompanyManager $ownedCompanyManager
     ) {}
 
     public function index(Request $request): View
@@ -26,10 +28,11 @@ class AdminController extends Controller
 
     public function show(User $user): View
     {
-        $user->load('roles');
+        $user->load('roles', 'ownedCompanies');
         $roles = $this->roleManager->getAll();
+        $ownedCompanies = $this->ownedCompanyManager->getAll();
 
-        return view('admin.users.show', compact('user', 'roles'));
+        return view('admin.users.show', compact('user', 'roles', 'ownedCompanies'));
     }
 
     public function update(Request $request, User $user): RedirectResponse
@@ -40,13 +43,17 @@ class AdminController extends Controller
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role_ids' => ['nullable', 'array'],
             'role_ids.*' => ['integer', 'exists:roles,id'],
+            'owned_company_ids' => ['nullable', 'array'],
+            'owned_company_ids.*' => ['integer', 'exists:owned_companies,id'],
         ]);
 
         $roleIds = $validated['role_ids'] ?? [];
-        unset($validated['role_ids']);
+        $ownedCompanyIds = $validated['owned_company_ids'] ?? [];
+        unset($validated['role_ids'], $validated['owned_company_ids']);
 
         $this->userManager->update($user, $validated);
         $this->userManager->syncRoles($user, $roleIds);
+        $this->userManager->syncOwnedCompanies($user, $ownedCompanyIds);
 
         return redirect()->route('admin.users.show', $user)->with('success', 'User updated.');
     }

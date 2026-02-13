@@ -48,4 +48,9 @@ class UserManager
     {
         $user->roles()->sync($roleIds);
     }
+
+    public function syncOwnedCompanies(User $user, array $ownedCompanyIds): void
+    {
+        $user->ownedCompanies()->sync($ownedCompanyIds);
+    }
 }

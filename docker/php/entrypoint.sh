@@ -7,6 +7,9 @@ if [ ! -f vendor/autoload.php ]; then
 fi
 # Laravel needs to write to storage and bootstrap/cache (views, logs, sessions, cache)
 chown -R www-data:www-data storage bootstrap/cache
+# Company logos (uploaded in app, committed via volume or later)
+mkdir -p public/company-logos
+chown -R www-data:www-data public/company-logos
 # Generate APP_KEY if .env exists but key is empty (required for encryption)
 if [ -f .env ] && ! grep -q '^APP_KEY=base64:' .env; then
     php artisan key:generate --force

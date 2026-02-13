@@ -35,4 +35,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'role_user');
     }
+
+    public function ownedCompanies(): BelongsToMany
+    {
+        return $this->belongsToMany(OwnedCompany::class, 'owned_company_user');
+    }
 }

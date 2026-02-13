@@ -65,6 +65,22 @@
                         @endforelse
                     </div>
                 </div>
+                <div>
+                    <span class="block text-sm font-medium text-gray-700 mb-2">Companies (access)</span>
+                    <div class="space-y-2">
+                        @forelse ($ownedCompanies as $company)
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="owned_company_ids[]" value="{{ $company->id }}"
+                                       {{ $user->ownedCompanies->contains($company) ? 'checked' : '' }}
+                                       class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700">{{ $company->name }}</span>
+                                <span class="ml-1 text-xs text-gray-500">({{ $company->slug }})</span>
+                            </label>
+                        @empty
+                            <p class="text-sm text-gray-500">No companies defined.</p>
+                        @endforelse
+                    </div>
+                </div>
                 <div class="flex gap-3 pt-2">
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
                         Save changes
