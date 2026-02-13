@@ -6,7 +6,7 @@
 <div class="py-12">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-6">
-            <a href="{{ route('customers.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Customers</a>
+            <a href="{{ route('customers.companies.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Companies</a>
         </div>
 
         @if (session('success'))
@@ -19,7 +19,7 @@
         <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
             <h1 class="text-xl font-bold text-gray-900 mb-6">Edit customer company</h1>
 
-            <form action="{{ route('customers.update', $customerCompany) }}" method="POST" class="space-y-4">
+            <form action="{{ route('customers.companies.update', $customerCompany) }}" method="POST" class="space-y-4">
                 @csrf
                 @method('PUT')
                 @if ($errors->any())
@@ -53,7 +53,7 @@
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
                         Save changes
                     </button>
-                    <a href="{{ route('customers.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <a href="{{ route('customers.companies.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                         Cancel
                     </a>
                 </div>

@@ -34,13 +34,13 @@ class OwnedCompaniesSeeder extends Seeder
             ]);
         }
 
-        // Attach companies to users: first two (admins) get all 3 companies, others get first company only
-        $userIds = DB::table('users')->pluck('id')->toArray();
-        foreach ($userIds as $index => $userId) {
+        // Attach companies to employees: first two (admins) get all 3 companies, others get first company only
+        $employeeIds = DB::table('employees')->pluck('id')->toArray();
+        foreach ($employeeIds as $index => $employeeId) {
             $ids = $index < 2 ? $companyIds : [$companyIds[0]];
             foreach ($ids as $companyId) {
-                DB::table('owned_company_user')->insert([
-                    'user_id' => $userId,
+                DB::table('owned_company_employee')->insert([
+                    'employee_id' => $employeeId,
                     'owned_company_id' => $companyId,
                     'created_at' => $now,
                     'updated_at' => $now,

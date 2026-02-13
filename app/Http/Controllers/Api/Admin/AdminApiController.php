@@ -3,25 +3,25 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Managers\EmployeeManager;
 use App\Managers\RoleManager;
-use App\Managers\UserManager;
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AdminApiController extends Controller
 {
     public function __construct(
-        private UserManager $userManager,
+        private EmployeeManager $employeeManager,
         private RoleManager $roleManager
     ) {}
 
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->integer('per_page', 15);
-        $users = $this->userManager->paginate($perPage);
+        $employees = $this->employeeManager->paginate($perPage);
 
-        return response()->json($users);
+        return response()->json($employees);
     }
 
     public function roles(): JsonResponse
@@ -29,22 +29,22 @@ class AdminApiController extends Controller
         return response()->json($this->roleManager->getAll());
     }
 
-    public function show(User $user): JsonResponse
+    public function show(Employee $employee): JsonResponse
     {
-        $user->load('roles');
+        $employee->load('roles');
         $roles = $this->roleManager->getAll();
 
         return response()->json([
-            'user' => $user,
+            'employee' => $employee,
             'roles' => $roles,
         ]);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(Request $request, Employee $employee): JsonResponse
     {
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => ['sometimes', 'email', 'max:255', 'unique:employees,email,' . $employee->id],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role_ids' => ['nullable', 'array'],
             'role_ids.*' => ['integer', 'exists:roles,id'],
@@ -53,19 +53,19 @@ class AdminApiController extends Controller
         $roleIds = $validated['role_ids'] ?? [];
         unset($validated['role_ids']);
 
-        $this->userManager->update($user, $validated);
-        $this->userManager->syncRoles($user, $roleIds);
+        $this->employeeManager->update($employee, $validated);
+        $this->employeeManager->syncRoles($employee, $roleIds);
 
-        return response()->json($user->fresh()->load('roles'));
+        return response()->json($employee->fresh()->load('roles'));
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(Employee $employee): JsonResponse
     {
-        if ($user->id === auth()->id()) {
+        if ($employee->id === auth()->id()) {
             return response()->json(['message' => 'You cannot delete yourself.'], 422);
         }
 
-        $this->userManager->delete($user);
+        $this->employeeManager->delete($employee);
 
         return response()->json(null, 204);
     }

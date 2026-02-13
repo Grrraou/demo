@@ -13,7 +13,7 @@
                 <p class="text-gray-700">Logged in as <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }}).</p>
                 @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                     <p class="mt-2">
-                        <a href="{{ route('admin.users.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Manage users →</a>
+                        <a href="{{ route('admin.employees.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">Manage employees →</a>
                     </p>
                 @endif
                 <form action="{{ route('logout') }}" method="POST" class="mt-4">

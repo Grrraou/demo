@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Web\Customers;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCompany;
@@ -61,6 +61,6 @@ class CustomerCompanyController extends Controller
 
         $customerCompany->update($validated);
 
-        return redirect()->route('customers.show', $customerCompany)->with('success', 'Customer company updated.');
+        return redirect()->route('customers.companies.show', $customerCompany)->with('success', 'Customer company updated.');
     }
 }

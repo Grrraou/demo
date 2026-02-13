@@ -17,7 +17,7 @@
     <div class="min-h-screen">
         @auth
             @php
-                $allowedCompanies = auth()->user()->ownedCompanies()->orderBy('name')->get();
+                $allowedCompanies = auth()->user()?->ownedCompanies()->orderBy('name')->get() ?? collect();
                 $currentCompanyId = (int) session('current_owned_company_id');
                 $currentCompany = $allowedCompanies->firstWhere('id', $currentCompanyId);
                 $headerColor = $currentCompany && $currentCompany->color ? $currentCompany->color : '#6366f1';
@@ -49,11 +49,34 @@
                             @endif
                         </div>
                         <nav class="flex items-center gap-4">
-                            <a href="{{ route('customers.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Customers</a>
-                            <a href="{{ route('contacts.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Contacts</a>
+                            @if (auth()->user()->canCreateArticles() || auth()->user()->canEditArticles())
+                                <a href="{{ route('blog.articles.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Blog</a>
+                            @endif
+                            <div class="relative group">
+                                <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                    Customers
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
+                                    <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
+                                        <a href="{{ route('customers.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Companies</a>
+                                        <a href="{{ route('customers.contacts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contacts</a>
+                                    </div>
+                                </div>
+                            </div>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
-                                <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Users</a>
-                                <a href="{{ route('admin.companies.index') }}" class="text-sm text-gray-600 hover:text-gray-900">Companies</a>
+                                <div class="relative group">
+                                    <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                        Admin
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
+                                        <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
+                                            <a href="{{ route('admin.employees.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Employees</a>
+                                            <a href="{{ route('admin.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Companies</a>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
                             <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
                             <form action="{{ route('logout') }}" method="POST" class="inline">

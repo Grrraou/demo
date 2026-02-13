@@ -10,6 +10,9 @@ chown -R www-data:www-data storage bootstrap/cache
 # Company logos (uploaded in app, committed via volume or later)
 mkdir -p public/company-logos
 chown -R www-data:www-data public/company-logos
+# Blog article images
+mkdir -p public/blog-images
+chown -R www-data:www-data public/blog-images
 # Generate APP_KEY if .env exists but key is empty (required for encryption)
 if [ -f .env ] && ! grep -q '^APP_KEY=base64:' .env; then
     php artisan key:generate --force

@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Customers')
+@section('title', 'Companies')
 
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Customers</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Companies</h1>
             <a href="{{ route('home') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Home</a>
         </div>
 
@@ -29,14 +29,14 @@
                     @forelse ($customerCompanies as $company)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <a href="{{ route('customers.show', $company) }}" class="text-indigo-600 hover:text-indigo-800">{{ $company->name }}</a>
+                                <a href="{{ route('customers.companies.show', $company) }}" class="text-indigo-600 hover:text-indigo-800">{{ $company->name }}</a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $company->email ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $company->phone ?? '—' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $company->contacts_count }}</td>
                             @if (auth()->user()->canEditCustomers())
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                    <a href="{{ route('customers.edit', $company) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
+                                    <a href="{{ route('customers.companies.edit', $company) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
                                 </td>
                             @endif
                         </tr>

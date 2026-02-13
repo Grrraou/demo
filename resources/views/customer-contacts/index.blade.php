@@ -7,7 +7,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Contacts</h1>
-            <a href="{{ route('home') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Home</a>
+            <a href="{{ route('customers.companies.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Companies</a>
         </div>
 
         <p class="mb-4 text-sm text-gray-600">Contacts from customer companies linked to your current company.</p>
@@ -36,7 +36,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $contact->job_title ?? '—' }}</td>
                             @if (auth()->user()->canEditCustomers())
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                    <a href="{{ route('contacts.edit', $contact) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
+                                    <a href="{{ route('customers.contacts.edit', $contact) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
                                 </td>
                             @endif
                         </tr>

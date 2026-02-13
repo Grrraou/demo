@@ -27,9 +27,9 @@ class OwnedCompany extends Model
         return asset(self::LOGO_DIR . '/' . basename($this->logo));
     }
 
-    public function users(): BelongsToMany
+    public function employees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'owned_company_user');
+        return $this->belongsToMany(Employee::class, 'owned_company_employee');
     }
 
     public function customerCompanies(): BelongsToMany

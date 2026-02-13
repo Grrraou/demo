@@ -6,16 +6,16 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class DemoUsersSeeder extends Seeder
+class DemoEmployeesSeeder extends Seeder
 {
     private const DEMO_PASSWORD = 'password';
 
-    private const DEMO_USERS = [
+    private const DEMO_EMPLOYEES = [
         ['name' => 'Admin One', 'email' => 'admin1@demo.test'],
         ['name' => 'Admin Two', 'email' => 'admin2@demo.test'],
-        ['name' => 'Demo User One', 'email' => 'user1@demo.test'],
-        ['name' => 'Demo User Two', 'email' => 'user2@demo.test'],
-        ['name' => 'Demo User Three', 'email' => 'user3@demo.test'],
+        ['name' => 'Demo Employee One', 'email' => 'user1@demo.test'],
+        ['name' => 'Demo Employee Two', 'email' => 'user2@demo.test'],
+        ['name' => 'Demo Employee Three', 'email' => 'user3@demo.test'],
     ];
 
     public function run(): void
@@ -48,12 +48,12 @@ class DemoUsersSeeder extends Seeder
         ]);
 
         $password = Hash::make(self::DEMO_PASSWORD);
-        $userIds = [];
+        $employeeIds = [];
 
-        foreach (self::DEMO_USERS as $user) {
-            $userIds[] = DB::table('users')->insertGetId([
-                'name' => $user['name'],
-                'email' => $user['email'],
+        foreach (self::DEMO_EMPLOYEES as $employee) {
+            $employeeIds[] = DB::table('employees')->insertGetId([
+                'name' => $employee['name'],
+                'email' => $employee['email'],
                 'password' => $password,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -61,9 +61,9 @@ class DemoUsersSeeder extends Seeder
         }
 
         foreach ([0, 1] as $index) {
-            DB::table('role_user')->insert([
+            DB::table('role_employee')->insert([
                 'role_id' => $adminRoleId,
-                'user_id' => $userIds[$index],
+                'employee_id' => $employeeIds[$index],
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

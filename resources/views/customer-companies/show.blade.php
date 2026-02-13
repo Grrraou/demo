@@ -6,9 +6,9 @@
 <div class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mb-6 flex items-center justify-between gap-4">
-            <a href="{{ route('customers.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Customers</a>
+            <a href="{{ route('customers.companies.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">← Companies</a>
             @if (auth()->user()->canEditCustomers())
-                <a href="{{ route('customers.edit', $customerCompany) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Edit company</a>
+                <a href="{{ route('customers.companies.edit', $customerCompany) }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Edit company</a>
             @endif
         </div>
 
@@ -65,7 +65,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $contact->job_title ?? '—' }}</td>
                             @if (auth()->user()->canEditCustomers())
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                    <a href="{{ route('contacts.edit', $contact) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
+                                    <a href="{{ route('customers.contacts.edit', $contact) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
                                 </td>
                             @endif
                         </tr>

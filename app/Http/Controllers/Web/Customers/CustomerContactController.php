@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Web\Customers;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerContact;
@@ -51,6 +51,6 @@ class CustomerContactController extends Controller
 
         $customerContact->update($validated);
 
-        return redirect()->route('contacts.index')->with('success', 'Contact updated.');
+        return redirect()->route('customers.contacts.index')->with('success', 'Contact updated.');
     }
 }
