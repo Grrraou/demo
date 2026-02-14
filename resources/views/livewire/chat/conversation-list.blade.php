@@ -3,16 +3,96 @@
     <div class="p-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-900">Conversations</h2>
-            <button 
-                wire:click="openNewChat"
-                class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition"
-                title="New conversation"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-            </button>
+            <div class="flex items-center gap-1">
+                <button 
+                    wire:click="toggleSearch"
+                    class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition {{ $showSearch ? 'bg-gray-100 text-gray-700' : '' }}"
+                    title="Search"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+                <button 
+                    wire:click="openNewChat"
+                    class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition"
+                    title="New conversation"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+            </div>
         </div>
+
+        {{-- Search Input --}}
+        @if($showSearch)
+            <div class="mt-3 relative">
+                <div class="relative">
+                    <input 
+                        type="text"
+                        wire:model.live.debounce.300ms="searchQuery"
+                        placeholder="Search conversations or messages..."
+                        class="w-full pl-9 pr-8 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        autofocus
+                    >
+                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    @if($searchQuery)
+                        <button 
+                            wire:click="clearSearch"
+                            class="absolute right-2 top-2 p-0.5 text-gray-400 hover:text-gray-600 rounded"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    @endif
+                </div>
+
+                {{-- Search Results --}}
+                @if(count($searchResults) > 0)
+                    <div class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-80 overflow-y-auto">
+                        @foreach($searchResults as $result)
+                            <button 
+                                wire:click="goToSearchResult('{{ $result['type'] }}', {{ $result['conversation_id'] }}, {{ $result['id'] }})"
+                                class="w-full px-3 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                            >
+                                <div class="flex items-start gap-2">
+                                    @if($result['type'] === 'conversation')
+                                        <div class="flex-shrink-0 mt-0.5">
+                                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                                            </svg>
+                                        </div>
+                                    @else
+                                        <div class="flex-shrink-0 mt-0.5">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 truncate">{{ $result['title'] }}</p>
+                                        <p class="text-xs text-gray-500 truncate">
+                                            {{ $result['subtitle'] }}
+                                            @if(isset($result['created_at']))
+                                                <span class="text-gray-400">· {{ $result['created_at'] }}</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            </button>
+                        @endforeach
+                    </div>
+                @elseif($searchQuery && strlen($searchQuery) >= 2)
+                    <div class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-4">
+                        <p class="text-sm text-gray-500 text-center">No results found</p>
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 
     {{-- Conversation List --}}

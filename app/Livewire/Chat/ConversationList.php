@@ -3,8 +3,10 @@
 namespace App\Livewire\Chat;
 
 use App\Models\Chat\Conversation;
+use App\Models\Chat\Message;
 use App\Models\TeamMember;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -15,6 +17,11 @@ class ConversationList extends Component
     public string $searchUsers = '';
     public array $selectedUsers = [];
     public string $conversationName = '';
+    
+    // Search functionality
+    public bool $showSearch = false;
+    public string $searchQuery = '';
+    public array $searchResults = [];
     
     // For expanded conversation details
     public ?int $expandedConversationId = null;
@@ -51,6 +58,134 @@ class ConversationList extends Component
     public function refresh(): void
     {
         // This triggers a re-render
+    }
+
+    // Search functionality
+    public function toggleSearch(): void
+    {
+        $this->showSearch = !$this->showSearch;
+        if (!$this->showSearch) {
+            $this->clearSearch();
+        }
+    }
+
+    public function clearSearch(): void
+    {
+        $this->searchQuery = '';
+        $this->searchResults = [];
+    }
+
+    public function updatedSearchQuery(): void
+    {
+        $this->performSearch();
+    }
+
+    public function performSearch(): void
+    {
+        if (strlen(trim($this->searchQuery)) < 2) {
+            $this->searchResults = [];
+            return;
+        }
+
+        $query = trim($this->searchQuery);
+        $userId = Auth::id();
+        
+        // Get conversation IDs the user participates in
+        $conversationIds = Auth::user()->conversations()->pluck('conversations.id');
+
+        // Search conversations by name
+        $conversationsByName = Conversation::whereIn('id', $conversationIds)
+            ->whereNull('archived_at')
+            ->where('name', 'ilike', "%{$query}%")
+            ->with(['participants:id,name'])
+            ->limit(5)
+            ->get()
+            ->map(function (Conversation $c) use ($userId) {
+                return [
+                    'type' => 'conversation',
+                    'id' => $c->id,
+                    'title' => $c->name ?? $c->getDisplayName($userId),
+                    'subtitle' => $c->participants->count() . ' participants',
+                    'conversation_id' => $c->id,
+                ];
+            });
+
+        // Search conversations by participant name
+        $conversationsByParticipant = Conversation::whereIn('id', $conversationIds)
+            ->whereNull('archived_at')
+            ->whereHas('participants', function ($q) use ($query) {
+                $q->where('name', 'ilike', "%{$query}%");
+            })
+            ->whereNotIn('id', $conversationsByName->pluck('id'))
+            ->with(['participants:id,name'])
+            ->limit(5)
+            ->get()
+            ->map(function (Conversation $c) use ($userId, $query) {
+                return [
+                    'type' => 'conversation',
+                    'id' => $c->id,
+                    'title' => $c->name ?? $c->getDisplayName($userId),
+                    'subtitle' => 'Participant matches "' . $query . '"',
+                    'conversation_id' => $c->id,
+                ];
+            });
+
+        // Search messages
+        $messages = Message::whereIn('conversation_id', $conversationIds)
+            ->where('type', Message::TYPE_MESSAGE)
+            ->where('body', 'ilike', "%{$query}%")
+            ->with(['conversation.participants:id,name', 'sender:id,name'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function (Message $m) use ($userId, $query) {
+                /** @var Conversation $conversation */
+                $conversation = $m->conversation;
+                return [
+                    'type' => 'message',
+                    'id' => $m->id,
+                    'title' => $this->highlightMatch($m->body, $query),
+                    'subtitle' => ($m->sender?->name ?? 'Unknown') . ' in ' . ($conversation->name ?? $conversation->getDisplayName($userId)),
+                    'conversation_id' => $m->conversation_id,
+                    'created_at' => $m->created_at->diffForHumans(),
+                ];
+            });
+
+        $this->searchResults = $conversationsByName
+            ->concat($conversationsByParticipant)
+            ->concat($messages)
+            ->toArray();
+    }
+
+    private function highlightMatch(string $text, string $query): string
+    {
+        // Truncate text around the match
+        $pos = stripos($text, $query);
+        if ($pos === false) {
+            return Str::limit($text, 60);
+        }
+
+        $start = max(0, $pos - 20);
+        $length = 60;
+        $excerpt = substr($text, $start, $length);
+        
+        if ($start > 0) {
+            $excerpt = '...' . $excerpt;
+        }
+        if (strlen($text) > $start + $length) {
+            $excerpt .= '...';
+        }
+
+        return $excerpt;
+    }
+
+    public function goToSearchResult(string $type, int $conversationId, ?int $messageId = null): void
+    {
+        $this->selectConversation($conversationId);
+        $this->clearSearch();
+        $this->showSearch = false;
+        
+        // If it's a message result, we could scroll to it (future enhancement)
     }
 
     public function selectConversation(int $id): void
