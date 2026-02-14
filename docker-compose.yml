@@ -132,6 +132,7 @@ services:
       - PUBLIC_URL=${JITSI_PUBLIC_URL:-http://localhost:8443}
       - TZ=${TZ:-UTC}
       - ENABLE_AUTH=0
+      - AUTH_TYPE=
       - ENABLE_GUESTS=1
       - ENABLE_LOBBY=0
       - ENABLE_PREJOIN_PAGE=0
@@ -170,6 +171,7 @@ services:
     environment:
       - TZ=${TZ:-UTC}
       - ENABLE_AUTH=0
+      - AUTH_TYPE=
       - ENABLE_GUESTS=1
       - ENABLE_LOBBY=0
       - ENABLE_XMPP_WEBSOCKET=1
@@ -219,6 +221,8 @@ services:
     environment:
       - TZ=${TZ:-UTC}
       - ENABLE_AUTH=0
+      - AUTH_TYPE=
+      - ENABLE_GUESTS=1
       - ENABLE_LOBBY=0
       - XMPP_DOMAIN=meet.jitsi
       - XMPP_SERVER=prosody

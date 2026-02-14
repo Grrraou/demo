@@ -19,3 +19,14 @@ yarn-error.log
 
 # pgAdmin generated from .env (server list; password is in container env only)
 docker/pgadmin/servers.json
+
+# Jitsi auto-generated configs and certificates (regenerated on container start)
+docker/jitsi/prosody/config/
+docker/jitsi/jicofo/
+docker/jitsi/jvb/
+docker/jitsi/transcripts/
+# Keep custom-*.js but ignore auto-generated web configs
+docker/jitsi/web/config.js
+docker/jitsi/web/interface_config.js
+docker/jitsi/web/keys/
+docker/jitsi/web/nginx/
