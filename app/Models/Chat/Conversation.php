@@ -4,6 +4,7 @@ namespace App\Models\Chat;
 
 use App\Models\TeamMember;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -17,10 +18,14 @@ class Conversation extends Model
         'entity_type',
         'entity_id',
         'meeting_token',
+        'created_by',
+        'archived_at',
     ];
 
     protected $casts = [
         'entity_id' => 'integer',
+        'created_by' => 'integer',
+        'archived_at' => 'datetime',
     ];
 
     // Conversation types
@@ -35,6 +40,31 @@ class Conversation extends Model
                 $conversation->meeting_token = Str::random(32);
             }
         });
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(TeamMember::class, 'created_by');
+    }
+
+    public function isCreator(int $teamMemberId): bool
+    {
+        return $this->created_by === $teamMemberId;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
+    }
+
+    public function archive(): void
+    {
+        $this->update(['archived_at' => now()]);
+    }
+
+    public function unarchive(): void
+    {
+        $this->update(['archived_at' => null]);
     }
 
     public function getJitsiUrl(?string $displayName = null): string
@@ -149,17 +179,19 @@ class Conversation extends Model
         $conversation = static::create([
             'type' => self::TYPE_DIRECT,
             'name' => $name,
+            'created_by' => $teamMember1Id, // First user is the creator
         ]);
         $conversation->participants()->attach([$teamMember1Id, $teamMember2Id]);
 
         return $conversation;
     }
 
-    public static function createGroup(array $teamMemberIds, ?string $name = null): self
+    public static function createGroup(array $teamMemberIds, ?string $name = null, ?int $createdBy = null): self
     {
         $conversation = static::create([
             'type' => self::TYPE_GROUP,
             'name' => $name,
+            'created_by' => $createdBy ?? $teamMemberIds[0] ?? null,
         ]);
         $conversation->participants()->attach($teamMemberIds);
 
@@ -187,5 +219,100 @@ class Conversation extends Model
         $conversation->participants()->attach($teamMemberIds);
 
         return $conversation;
+    }
+
+    public function addParticipants(array $teamMemberIds, ?int $invitedById = null): void
+    {
+        // Get names of new participants for logging
+        $newParticipants = TeamMember::whereIn('id', $teamMemberIds)
+            ->whereNotIn('id', $this->participants->pluck('id'))
+            ->get();
+        
+        $this->participants()->syncWithoutDetaching($teamMemberIds);
+        $this->touch();
+
+        // Log system messages for each new participant
+        $inviterName = $invitedById ? TeamMember::find($invitedById)?->name : null;
+        
+        foreach ($newParticipants as $participant) {
+            $body = $inviterName 
+                ? "{$inviterName} added {$participant->name} to the conversation"
+                : "{$participant->name} joined the conversation";
+            
+            Message::createSystemMessage(
+                $this->id,
+                Message::TYPE_USER_JOINED,
+                $body,
+                $invitedById
+            );
+        }
+    }
+
+    public function removeParticipant(int $teamMemberId): bool
+    {
+        // Creator can't leave - they must archive instead
+        if ($this->isCreator($teamMemberId)) {
+            return false;
+        }
+
+        // Must be a participant to leave
+        if (!$this->hasParticipant($teamMemberId)) {
+            return false;
+        }
+
+        // Get name before removing for logging
+        $participantName = TeamMember::find($teamMemberId)?->name ?? 'Someone';
+
+        $this->participants()->detach($teamMemberId);
+        $this->touch();
+        
+        // Log system message
+        Message::createSystemMessage(
+            $this->id,
+            Message::TYPE_USER_LEFT,
+            "{$participantName} left the conversation",
+            $teamMemberId
+        );
+        
+        return true;
+    }
+
+    public function rename(?string $newName, int $renamedById): void
+    {
+        $oldName = $this->name;
+        $this->update(['name' => $newName]);
+
+        $renamerName = TeamMember::find($renamedById)?->name ?? 'Someone';
+        
+        if ($newName && $oldName) {
+            $body = "{$renamerName} renamed the conversation from \"{$oldName}\" to \"{$newName}\"";
+        } elseif ($newName) {
+            $body = "{$renamerName} named the conversation \"{$newName}\"";
+        } else {
+            $body = "{$renamerName} removed the conversation name";
+        }
+
+        Message::createSystemMessage(
+            $this->id,
+            Message::TYPE_RENAMED,
+            $body,
+            $renamedById
+        );
+    }
+
+    public function canLeave(int $teamMemberId): bool
+    {
+        // Creator can't leave - they must archive instead
+        if ($this->isCreator($teamMemberId)) {
+            return false;
+        }
+
+        return $this->hasParticipant($teamMemberId);
+    }
+
+    public function canArchive(int $teamMemberId): bool
+    {
+        // Only creator can archive
+        return $this->isCreator($teamMemberId);
     }
 }

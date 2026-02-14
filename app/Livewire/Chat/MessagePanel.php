@@ -41,6 +41,13 @@ class MessagePanel extends Component
         $this->dispatch('scrollToBottom');
     }
 
+    #[On('refreshMessages')]
+    public function refreshMessages(): void
+    {
+        $this->loadMessages();
+        $this->dispatch('scrollToBottom');
+    }
+
     public function getListeners(): array
     {
         $listeners = [];
@@ -76,11 +83,13 @@ class MessagePanel extends Component
             ->get()
             ->map(fn ($m) => [
                 'id' => $m->id,
+                'type' => $m->type,
                 'body' => $m->body,
                 'sender_id' => $m->team_member_id,
-                'sender_name' => $m->sender->name,
+                'sender_name' => $m->sender?->name ?? 'System',
                 'created_at' => $m->created_at->format('H:i'),
                 'is_mine' => $m->team_member_id === Auth::id(),
+                'is_system' => $m->isSystemMessage(),
             ])
             ->toArray();
 
@@ -148,7 +157,7 @@ class MessagePanel extends Component
 
         $userName = Auth::user()->name;
         
-        // Broadcast meeting started event to other participants
+        // Broadcast meeting started event to other participants (not the starter)
         broadcast(new MeetingStarted($conversation, Auth::user()))->toOthers();
 
         // Open the meeting in a new tab with user's name
@@ -185,9 +194,16 @@ class MessagePanel extends Component
             'starter_name' => $data['starter_name'],
             'started_at' => now()->timestamp,
         ];
-        
-        // Auto-dismiss after 30 seconds via JavaScript
-        $this->dispatch('showMeetingNotification');
+    }
+
+    #[On('meetingStartedNotification')]
+    public function handleMeetingStartedNotification(array $data): void
+    {
+        // Called from JavaScript Echo listener
+        $this->meetingNotification = [
+            'starter_name' => $data['starter_name'],
+            'started_at' => now()->timestamp,
+        ];
     }
 
     public function getConversationProperty()

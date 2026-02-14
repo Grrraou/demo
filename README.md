@@ -144,3 +144,8 @@ Commands:
 - `make seed` – run seeders (data)
 - `make fresh` – drop all tables, migrate, then seed (full reset)
 - `make backup` – dump DB to `backup_YYYYMMDD_HHMMSS.sql` in project root
+
+
+in case jitsi ask to login:
+sudo rm -rf docker/jitsi/prosody/config/data
+docker compose restart prosody jicofo jvb jitsi-web

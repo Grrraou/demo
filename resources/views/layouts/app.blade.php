@@ -142,12 +142,12 @@
             window.Echo = new Echo({
                 broadcaster: 'reverb',
                 key: '{{ config('reverb.apps.apps.0.key') }}',
-                wsHost: '{{ config('reverb.apps.apps.0.options.host') ?? 'localhost' }}',
-                wsPort: {{ config('reverb.apps.apps.0.options.port') ?? 8085 }},
-                wssPort: {{ config('reverb.apps.apps.0.options.port') ?? 8085 }},
-                forceTLS: {{ config('reverb.apps.apps.0.options.scheme') === 'https' ? 'true' : 'false' }},
+                wsHost: window.location.hostname,
+                wsPort: 8085,
+                wssPort: 8085,
+                forceTLS: false,
                 enabledTransports: ['ws', 'wss'],
-                authEndpoint: '/api/broadcasting/auth',
+                authEndpoint: '/broadcasting/auth',
                 auth: {
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'

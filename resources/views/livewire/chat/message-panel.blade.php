@@ -101,20 +101,50 @@
             @scroll-to-bottom.window="$nextTick(() => scrollToBottom())"
         >
             @forelse($messages as $message)
-                {{-- Regular Message --}}
-                <div class="flex {{ $message['is_mine'] ? 'justify-end' : 'justify-start' }}">
-                    <div class="max-w-[70%] {{ $message['is_mine'] ? 'order-2' : 'order-1' }}">
-                        @if(!$message['is_mine'])
-                            <p class="text-xs text-gray-500 mb-1 ml-1">{{ $message['sender_name'] }}</p>
-                        @endif
-                        <div class="{{ $message['is_mine'] ? 'bg-blue-500 text-white' : 'bg-white text-gray-900 border border-gray-200' }} rounded-2xl px-4 py-2 shadow-sm">
-                            <p class="text-sm whitespace-pre-wrap break-words">{{ $message['body'] }}</p>
+                @if($message['is_system'])
+                    {{-- System Message --}}
+                    <div class="flex justify-center my-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
+                            @if($message['type'] === 'user_joined')
+                                <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                </svg>
+                            @elseif($message['type'] === 'user_left')
+                                <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                            @elseif($message['type'] === 'renamed')
+                                <svg class="w-3.5 h-3.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                            @else
+                                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            @endif
+                            <span class="text-xs text-gray-500">{{ $message['body'] }}</span>
+                            <span class="text-xs text-gray-400">{{ $message['created_at'] }}</span>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 {{ $message['is_mine'] ? 'text-right mr-1' : 'ml-1' }}">
-                            {{ $message['created_at'] }}
-                        </p>
                     </div>
-                </div>
+                @else
+                    {{-- Regular Message --}}
+                    <div class="flex justify-start">
+                        <div class="max-w-[70%]">
+                            <p class="text-xs text-gray-500 mb-1 ml-1">
+                                {{ $message['sender_name'] }}
+                                @if($message['is_mine'])
+                                    <span class="text-blue-500">(you)</span>
+                                @endif
+                            </p>
+                            <div class="bg-white text-gray-900 border border-gray-200 rounded-2xl px-4 py-2 shadow-sm">
+                                <p class="text-sm whitespace-pre-wrap break-words">{{ $message['body'] }}</p>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1 ml-1">
+                                {{ $message['created_at'] }}
+                            </p>
+                        </div>
+                    </div>
+                @endif
             @empty
                 <div class="flex items-center justify-center h-full">
                     <div class="text-center text-gray-500">
@@ -177,5 +207,64 @@
                 window.dispatchEvent(new CustomEvent('scroll-to-bottom'));
             });
         });
+
+        // Listen for meeting started events via Echo
+        (function() {
+            let currentChannel = null;
+            let echoSubscription = null;
+            let conversationId = @json($conversationId);
+
+            function subscribeToMeetingEvents(convId) {
+                if (!convId) return;
+                
+                // Wait for Echo to be available
+                if (!window.Echo) {
+                    console.log('[Chat] Waiting for Echo to be available...');
+                    setTimeout(() => subscribeToMeetingEvents(convId), 100);
+                    return;
+                }
+                
+                // Don't re-subscribe to the same channel
+                if (currentChannel === convId) return;
+                
+                // Unsubscribe from previous channel
+                if (currentChannel) {
+                    console.log('[Chat] Leaving channel:', currentChannel);
+                    window.Echo.leave('conversation.' + currentChannel);
+                }
+                
+                currentChannel = convId;
+                console.log('[Chat] Subscribing to conversation channel:', convId);
+                
+                // Subscribe to the conversation's private channel
+                echoSubscription = window.Echo.private('conversation.' + convId)
+                    .subscribed(() => {
+                        console.log('[Chat] Successfully subscribed to channel:', convId);
+                    })
+                    .error((error) => {
+                        console.error('[Chat] Error subscribing to channel:', error);
+                    })
+                    .listen('.meeting.started', (data) => {
+                        console.log('[Chat] Meeting started event received:', data);
+                        // Dispatch to Livewire component
+                        Livewire.dispatch('meetingStartedNotification', { data: data });
+                    });
+            }
+
+            // Subscribe on page load
+            if (conversationId) {
+                subscribeToMeetingEvents(conversationId);
+            }
+
+            // Re-subscribe when conversation changes
+            Livewire.on('conversationSelected', (params) => {
+                // Livewire 3 passes params as an array with named keys
+                const convId = params.conversationId;
+                console.log('[Chat] Conversation selected:', convId);
+                if (convId) {
+                    subscribeToMeetingEvents(convId);
+                }
+            });
+        })();
     </script>
 </div>
