@@ -50,76 +50,71 @@
                         </div>
                         <nav class="flex items-center gap-4">
                             @if (auth()->user()->canCreateArticles() || auth()->user()->canEditArticles())
-                                <a href="{{ route('blog.articles.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Blog</a>
+                                <a href="{{ route('blog.articles.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">📝 Blog</a>
                             @endif
                             @if (auth()->user()->canViewInventory())
                                 <div class="relative group">
                                     <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
-                                        Inventory
+                                        📦 Inventory
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                     <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                         <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[160px]">
-<a href="{{ route('inventory.products.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Products</a>
-                                        <a href="{{ route('inventory.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Categories</a>
-                                        <a href="{{ route('inventory.units.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Units</a>
-                                        <a href="{{ route('inventory.suppliers.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Suppliers</a>
-                                        <a href="{{ route('inventory.stock-locations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Locations</a>
-                                        <a href="{{ route('inventory.stocks.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Stock</a>
+                                            <a href="{{ route('inventory.products.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏷️ Products</a>
+                                            <a href="{{ route('inventory.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📂 Categories</a>
+                                            <a href="{{ route('inventory.units.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📏 Units</a>
+                                            <a href="{{ route('inventory.suppliers.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏭 Suppliers</a>
+                                            <a href="{{ route('inventory.stock-locations.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📍 Locations</a>
+                                            <a href="{{ route('inventory.stocks.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📊 Stock</a>
                                         </div>
                                     </div>
                                 </div>
                             @endif
                             <div class="relative group">
                                 <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
-                                    Sales
+                                    💰 Sales
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                     <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[160px]">
-                                        <a href="{{ route('sales.quotes.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Quotes</a>
-                                        <a href="{{ route('sales.orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Orders</a>
-                                        <a href="{{ route('sales.deliveries.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Deliveries</a>
-                                        <a href="{{ route('sales.invoices.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Invoices</a>
+                                        <a href="{{ route('sales.quotes.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📋 Quotes</a>
+                                        <a href="{{ route('sales.orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🛒 Orders</a>
+                                        <a href="{{ route('sales.deliveries.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🚚 Deliveries</a>
+                                        <a href="{{ route('sales.invoices.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🧾 Invoices</a>
                                     </div>
                                 </div>
                             </div>
                             <div class="relative group">
                                 <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
-                                    Customers
+                                    👥 Customers
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                     <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
-                                        <a href="{{ route('customers.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Companies</a>
-                                        <a href="{{ route('customers.contacts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contacts</a>
+                                        <a href="{{ route('customers.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏢 Companies</a>
+                                        <a href="{{ route('customers.contacts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">👤 Contacts</a>
                                     </div>
                                 </div>
                             </div>
-                            <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                Talk
-                            </a>
+                            <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">💬 Talk</a>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                                 <div class="relative group">
                                     <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
-                                        Admin
+                                        ⚙️ Admin
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                     <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                         <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
-                                            <a href="{{ route('admin.team-members.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Team members</a>
-                                            <a href="{{ route('admin.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Companies</a>
+                                            <a href="{{ route('admin.team-members.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">👨‍💼 Team members</a>
+                                            <a href="{{ route('admin.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏢 Companies</a>
                                         </div>
                                     </div>
                                 </div>
                             @endif
-                            <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
+                            <span class="text-sm text-gray-500">👤 {{ auth()->user()->name }}</span>
                             <form action="{{ route('logout') }}" method="POST" class="inline">
                                 @csrf
-                                <button type="submit" class="text-sm text-gray-600 hover:text-gray-900">Log out</button>
+                                <button type="submit" class="text-sm text-gray-600 hover:text-gray-900">🚪 Log out</button>
                             </form>
                         </nav>
                     </div>
