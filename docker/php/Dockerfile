@@ -17,7 +17,8 @@ RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local \
         zip \
         opcache \
         mbstring \
-        bcmath
+        bcmath \
+        pcntl
 
 RUN pecl install redis && docker-php-ext-enable redis
 

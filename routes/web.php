@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\Admin\AdminCompanyController;
 use App\Http\Controllers\Web\Admin\AdminTeamMemberController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\Blog\ArticleController as BlogArticleController;
+use App\Http\Controllers\Web\ChatController;
 use App\Http\Controllers\Web\Customers\CustomerCompanyController;
 use App\Http\Controllers\Web\Customers\CustomerContactController;
 use App\Http\Controllers\Web\HomeController;
@@ -28,6 +29,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/current-company', [OwnedCompanySwitchController::class, 'switch'])->name('current-company.switch');
+
+    // Chat
+    Route::get('/talk', [ChatController::class, 'index'])->name('chat.index');
 
     Route::middleware(['view.inventory'])->prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/products', [InventoryProductController::class, 'index'])->name('products.index');

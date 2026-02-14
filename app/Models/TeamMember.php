@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Chat\Conversation;
+use App\Models\Chat\Message;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -41,6 +44,18 @@ class TeamMember extends Authenticatable
     public function ownedCompanies(): BelongsToMany
     {
         return $this->belongsToMany(OwnedCompany::class, 'owned_company_team_member');
+    }
+
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_team_member')
+            ->withPivot('last_read_at')
+            ->withTimestamps();
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'team_member_id');
     }
 
     public function hasPermission(string $slug): bool

@@ -9,7 +9,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
         <script src="https://cdn.tailwindcss.com"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        {{-- Alpine.js is bundled with Livewire 3, don't load it separately --}}
     @endif
     @livewireStyles
 </head>
@@ -96,6 +96,12 @@
                                     </div>
                                 </div>
                             </div>
+                            <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Talk
+                            </a>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                                 <div class="relative group">
                                     <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
@@ -127,5 +133,30 @@
         @endauth
     </div>
     @livewireScripts
+    
+    @if (!file_exists(public_path('build/manifest.json')))
+        {{-- Echo + Pusher from CDN when Vite isn't built --}}
+        <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.3.0/dist/web/pusher.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
+        <script>
+            window.Echo = new Echo({
+                broadcaster: 'reverb',
+                key: '{{ config('reverb.apps.apps.0.key') }}',
+                wsHost: '{{ config('reverb.apps.apps.0.options.host') ?? 'localhost' }}',
+                wsPort: {{ config('reverb.apps.apps.0.options.port') ?? 8085 }},
+                wssPort: {{ config('reverb.apps.apps.0.options.port') ?? 8085 }},
+                forceTLS: {{ config('reverb.apps.apps.0.options.scheme') === 'https' ? 'true' : 'false' }},
+                enabledTransports: ['ws', 'wss'],
+                authEndpoint: '/api/broadcasting/auth',
+                auth: {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                }
+            });
+        </script>
+    @endif
+
+    @stack('scripts')
 </body>
 </html>

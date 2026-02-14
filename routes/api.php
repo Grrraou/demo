@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Admin\AdminApiController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Blog\ArticleController as BlogArticleController;
+use App\Http\Controllers\Api\Chat\ConversationController;
+use App\Http\Controllers\Api\Chat\MessageController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\Inventory\CategoryController as InventoryCategoryController;
 use App\Http\Controllers\Api\Inventory\LotBatchController;
@@ -24,6 +26,16 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    // Chat module
+    Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('conversations', [ConversationController::class, 'index'])->name('conversations.index');
+        Route::post('conversations', [ConversationController::class, 'store'])->name('conversations.store');
+        Route::get('conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+        Route::post('conversations/{conversation}/read', [ConversationController::class, 'markAsRead'])->name('conversations.read');
+        Route::get('conversations/{conversation}/messages', [MessageController::class, 'index'])->name('messages.index');
+        Route::post('conversations/{conversation}/messages', [MessageController::class, 'store'])->name('messages.store');
+    });
 
     Route::apiResource('customers', CustomerController::class);
 
