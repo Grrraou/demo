@@ -4,6 +4,7 @@
     "description": "ERP backend - Laravel 11",
     "license": "MIT",
     "require": {
+        "barryvdh/laravel-dompdf": "^3.0",
         "php": "^8.2",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",

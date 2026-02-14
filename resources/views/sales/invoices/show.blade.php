@@ -12,7 +12,10 @@
         <div class="bg-white rounded-lg shadow border border-gray-200 p-6">
             <div class="flex justify-between items-start mb-6">
                 <h1 class="text-xl font-bold text-gray-900">Invoice {{ $invoice->number }}</h1>
-                <span class="px-2 py-1 text-sm rounded bg-gray-100">{{ $invoice->status ? $invoice->status->value : '—' }}</span>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('sales.invoices.pdf', $invoice) }}" target="_blank" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Download PDF</a>
+                    <span class="px-2 py-1 text-sm rounded bg-gray-100">{{ $invoice->status ? $invoice->status->value : '—' }}</span>
+                </div>
             </div>
 
             <dl class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">

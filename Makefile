@@ -9,9 +9,11 @@ install:
 
 build:
 	docker compose build
+	docker compose run --rm app composer install
 
 rebuild:
 	docker compose build --no-cache
+	docker compose run --rm app composer install
 
 dev:
 	docker compose up -d
