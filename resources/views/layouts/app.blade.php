@@ -91,6 +91,7 @@
                                 </button>
                                 <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
                                     <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[140px]">
+                                        <a href="{{ route('customers.leads.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🎯 Leads</a>
                                         <a href="{{ route('customers.companies.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏢 Companies</a>
                                         <a href="{{ route('customers.contacts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">👤 Contacts</a>
                                     </div>

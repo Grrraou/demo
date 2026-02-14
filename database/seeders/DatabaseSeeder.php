@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             BlogArticlesSeeder::class,
             InventorySeeder::class,
             SalesSeeder::class,
+            LeadSeeder::class,
         ]);
     }
 }

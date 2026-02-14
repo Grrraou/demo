@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\Blog\ArticleController as BlogArticleController;
 use App\Http\Controllers\Web\ChatController;
 use App\Http\Controllers\Web\Customers\CustomerCompanyController;
 use App\Http\Controllers\Web\Customers\CustomerContactController;
+use App\Http\Controllers\Web\Customers\LeadController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\Inventory\CategoryController as InventoryCategoryController;
 use App\Http\Controllers\Web\Inventory\ProductController as InventoryProductController;
@@ -66,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('customers')->name('customers.')->group(function () {
+        Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
         Route::get('/companies', [CustomerCompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/{customerCompany}', [CustomerCompanyController::class, 'show'])->name('companies.show');
         Route::get('/contacts', [CustomerContactController::class, 'index'])->name('contacts.index');
