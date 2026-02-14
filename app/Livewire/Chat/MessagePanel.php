@@ -3,6 +3,7 @@
 namespace App\Livewire\Chat;
 
 use App\Events\Chat\MessageSent;
+use App\Events\Chat\MeetingStarted;
 use App\Models\Chat\Conversation;
 use App\Models\Chat\Message;
 use App\Notifications\Chat\NewMessageNotification;
@@ -15,6 +16,7 @@ class MessagePanel extends Component
     public ?int $conversationId = null;
     public string $newMessage = '';
     public array $messages = [];
+    public ?array $meetingNotification = null;
 
     public function mount(?int $conversationId = null): void
     {
@@ -27,13 +29,16 @@ class MessagePanel extends Component
     public function loadConversation(int $conversationId): void
     {
         $this->conversationId = $conversationId;
+        $this->meetingNotification = null;
         $this->loadMessages();
+        $this->dispatch('scrollToBottom');
     }
 
     public function handleNewMessage(): void
     {
         $this->loadMessages();
         $this->dispatch('refreshConversations');
+        $this->dispatch('scrollToBottom');
     }
 
     public function getListeners(): array
@@ -42,6 +47,7 @@ class MessagePanel extends Component
         
         if ($this->conversationId) {
             $listeners["echo-private:conversation.{$this->conversationId},.message.sent"] = 'handleNewMessage';
+            $listeners["echo-private:conversation.{$this->conversationId},.meeting.started"] = 'onMeetingStarted';
         }
 
         return $listeners;
@@ -61,8 +67,11 @@ class MessagePanel extends Component
             return;
         }
 
+        $oldCount = count($this->messages);
+
         $this->messages = $conversation->messages()
-            ->with('sender:id,name')
+            ->with(['sender:id,name'])
+            ->whereNull('meeting_id') // Exclude old meeting messages
             ->orderBy('created_at', 'asc')
             ->get()
             ->map(fn ($m) => [
@@ -74,6 +83,11 @@ class MessagePanel extends Component
                 'is_mine' => $m->team_member_id === Auth::id(),
             ])
             ->toArray();
+
+        // Scroll to bottom if new messages arrived
+        if (count($this->messages) > $oldCount) {
+            $this->dispatch('scrollToBottom');
+        }
 
         // Mark as read
         $conversation->markAsRead(Auth::id());
@@ -115,8 +129,65 @@ class MessagePanel extends Component
         $this->newMessage = '';
         $this->loadMessages();
 
-        // Notify conversation list to refresh
+        // Notify conversation list to refresh and scroll to bottom
         $this->dispatch('refreshConversations');
+        $this->dispatch('scrollToBottom');
+    }
+
+    public function startMeeting(): void
+    {
+        if (!$this->conversationId) {
+            return;
+        }
+
+        $conversation = Conversation::find($this->conversationId);
+        
+        if (!$conversation || !$conversation->hasParticipant(Auth::id())) {
+            return;
+        }
+
+        $userName = Auth::user()->name;
+        
+        // Broadcast meeting started event to other participants
+        broadcast(new MeetingStarted($conversation, Auth::user()))->toOthers();
+
+        // Open the meeting in a new tab with user's name
+        $this->dispatch('openMeeting', url: $conversation->getJitsiUrl($userName));
+    }
+
+    public function joinMeeting(): void
+    {
+        if (!$this->conversationId) {
+            return;
+        }
+
+        $conversation = Conversation::find($this->conversationId);
+        
+        if (!$conversation || !$conversation->hasParticipant(Auth::id())) {
+            return;
+        }
+
+        $userName = Auth::user()->name;
+        $this->dispatch('openMeeting', url: $conversation->getJitsiUrl($userName));
+        
+        // Clear the notification when joining
+        $this->meetingNotification = null;
+    }
+
+    public function dismissMeetingNotification(): void
+    {
+        $this->meetingNotification = null;
+    }
+
+    public function onMeetingStarted(array $data): void
+    {
+        $this->meetingNotification = [
+            'starter_name' => $data['starter_name'],
+            'started_at' => now()->timestamp,
+        ];
+        
+        // Auto-dismiss after 30 seconds via JavaScript
+        $this->dispatch('showMeetingNotification');
     }
 
     public function getConversationProperty()

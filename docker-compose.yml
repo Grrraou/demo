@@ -117,10 +117,155 @@ services:
     networks:
       - erp
 
+  # Jitsi Meet - Self-hosted video conferencing
+  jitsi-web:
+    image: jitsi/web:stable-9584
+    restart: unless-stopped
+    ports:
+      - "${JITSI_PORT:-8443}:80"
+    volumes:
+      - ${JITSI_CONFIG:-./docker/jitsi}/web:/config:Z
+      - ${JITSI_CONFIG:-./docker/jitsi}/transcripts:/usr/share/jitsi-meet/transcripts:Z
+      - ./docker/jitsi/web/custom-config.js:/usr/share/jitsi-meet/custom-config.js:ro
+      - ./docker/jitsi/web/custom-interface_config.js:/usr/share/jitsi-meet/custom-interface_config.js:ro
+    environment:
+      - PUBLIC_URL=${JITSI_PUBLIC_URL:-http://localhost:8443}
+      - TZ=${TZ:-UTC}
+      - ENABLE_AUTH=0
+      - ENABLE_GUESTS=1
+      - ENABLE_LOBBY=0
+      - ENABLE_PREJOIN_PAGE=0
+      - ENABLE_WELCOME_PAGE=0
+      - ENABLE_CLOSE_PAGE=0
+      - DISABLE_HTTPS=1
+      - ENABLE_XMPP_WEBSOCKET=1
+      - JICOFO_AUTH_PASSWORD=${JICOFO_AUTH_PASSWORD:-jicofopass}
+      - JVB_AUTH_PASSWORD=${JVB_AUTH_PASSWORD:-jvbpass}
+      - JIGASI_XMPP_PASSWORD=${JIGASI_XMPP_PASSWORD:-jigasipass}
+      - JIBRI_RECORDER_PASSWORD=${JIBRI_RECORDER_PASSWORD:-jibrirecorderpass}
+      - JIBRI_XMPP_PASSWORD=${JIBRI_XMPP_PASSWORD:-jibrixmpppass}
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=prosody
+      - XMPP_BOSH_URL_BASE=http://prosody:5280
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_GUEST_DOMAIN=guest.meet.jitsi
+    depends_on:
+      - prosody
+    networks:
+      erp:
+        aliases:
+          - meet.jitsi
+
+  prosody:
+    image: jitsi/prosody:stable-9584
+    restart: unless-stopped
+    expose:
+      - "5222"
+      - "5280"
+      - "5347"
+    volumes:
+      - ${JITSI_CONFIG:-./docker/jitsi}/prosody/config:/config:Z
+      - ${JITSI_CONFIG:-./docker/jitsi}/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
+    environment:
+      - TZ=${TZ:-UTC}
+      - ENABLE_AUTH=0
+      - ENABLE_GUESTS=1
+      - ENABLE_LOBBY=0
+      - ENABLE_XMPP_WEBSOCKET=1
+      - GLOBAL_MODULES=
+      - GLOBAL_CONFIG=
+      - LDAP_URL=
+      - LDAP_BASE=
+      - LDAP_BINDDN=
+      - LDAP_BINDPW=
+      - LDAP_FILTER=
+      - LDAP_AUTH_METHOD=
+      - LDAP_VERSION=
+      - LDAP_USE_TLS=
+      - LDAP_TLS_CIPHERS=
+      - LDAP_TLS_CHECK_PEER=
+      - LDAP_TLS_CACERT_FILE=
+      - LDAP_TLS_CACERT_DIR=
+      - LDAP_START_TLS=
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_GUEST_DOMAIN=guest.meet.jitsi
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - XMPP_MODULES=
+      - XMPP_MUC_MODULES=
+      - XMPP_INTERNAL_MUC_MODULES=
+      - XMPP_RECORDER_DOMAIN=recorder.meet.jitsi
+      - JICOFO_COMPONENT_SECRET=${JICOFO_COMPONENT_SECRET:-s3cr3t}
+      - JICOFO_AUTH_PASSWORD=${JICOFO_AUTH_PASSWORD:-jicofopass}
+      - JVB_AUTH_PASSWORD=${JVB_AUTH_PASSWORD:-jvbpass}
+      - JIGASI_XMPP_PASSWORD=${JIGASI_XMPP_PASSWORD:-jigasipass}
+      - JIBRI_RECORDER_PASSWORD=${JIBRI_RECORDER_PASSWORD:-jibrirecorderpass}
+      - JIBRI_XMPP_PASSWORD=${JIBRI_XMPP_PASSWORD:-jibrixmpppass}
+      - LOG_LEVEL=info
+    networks:
+      erp:
+        aliases:
+          - prosody
+          - xmpp.meet.jitsi
+
+  jicofo:
+    image: jitsi/jicofo:stable-9584
+    restart: unless-stopped
+    volumes:
+      - ${JITSI_CONFIG:-./docker/jitsi}/jicofo:/config:Z
+    environment:
+      - TZ=${TZ:-UTC}
+      - ENABLE_AUTH=0
+      - ENABLE_LOBBY=0
+      - XMPP_DOMAIN=meet.jitsi
+      - XMPP_SERVER=prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_MUC_DOMAIN=muc.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JICOFO_COMPONENT_SECRET=${JICOFO_COMPONENT_SECRET:-s3cr3t}
+      - JICOFO_AUTH_PASSWORD=${JICOFO_AUTH_PASSWORD:-jicofopass}
+      - JVB_BREWERY_MUC=jvbbrewery
+      - JIGASI_BREWERY_MUC=jigasibrewery
+      - JIBRI_BREWERY_MUC=jibribrewery
+      - JIBRI_PENDING_TIMEOUT=90
+    depends_on:
+      - prosody
+    networks:
+      - erp
+
+  jvb:
+    image: jitsi/jvb:stable-9584
+    restart: unless-stopped
+    ports:
+      - "${JVB_PORT:-10000}:10000/udp"
+    volumes:
+      - ${JITSI_CONFIG:-./docker/jitsi}/jvb:/config:Z
+    environment:
+      - TZ=${TZ:-UTC}
+      - XMPP_SERVER=prosody
+      - XMPP_AUTH_DOMAIN=auth.meet.jitsi
+      - XMPP_INTERNAL_MUC_DOMAIN=internal-muc.meet.jitsi
+      - JVB_AUTH_PASSWORD=${JVB_AUTH_PASSWORD:-jvbpass}
+      - JVB_BREWERY_MUC=jvbbrewery
+      - JVB_PORT=${JVB_PORT:-10000}
+      - JVB_STUN_SERVERS=meet-jit-si-turnrelay.jitsi.net:443
+      - PUBLIC_URL=${JITSI_PUBLIC_URL:-http://localhost:8443}
+    depends_on:
+      - prosody
+    networks:
+      - erp
+
 volumes:
   postgres_data:
   redis_data:
   pgadmin_data:
+  jitsi_web_config:
+  jitsi_prosody_config:
+  jitsi_jicofo_config:
+  jitsi_jvb_config:
 
 networks:
   erp:

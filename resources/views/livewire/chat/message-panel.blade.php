@@ -1,41 +1,107 @@
-<div class="flex flex-col h-full">
+<div class="flex flex-col h-full" wire:poll.5s="loadMessages">
     @if($conversationId && $this->conversation)
         {{-- Header --}}
         <div class="p-4 bg-white border-b border-gray-200">
             @php
-                $otherParticipants = $this->conversation->participants->where('id', '!=', auth()->id());
-                $displayName = $this->conversation->type === 'direct' 
-                    ? $otherParticipants->first()?->name ?? 'Unknown'
-                    : $otherParticipants->pluck('name')->join(', ');
+                $displayName = $this->conversation->getDisplayName(auth()->id());
             @endphp
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                    {{ strtoupper(substr($displayName, 0, 1)) }}
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        {{ strtoupper(substr($displayName, 0, 1)) }}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">{{ $displayName }}</h3>
+                        <p class="text-xs text-gray-500">
+                            @if($this->conversation->type === 'group')
+                                {{ $this->conversation->participants->count() }} participants
+                            @elseif($this->conversation->type === 'entity')
+                                {{ ucfirst($this->conversation->entity_type) }} #{{ $this->conversation->entity_id }}
+                            @else
+                                Direct message
+                            @endif
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h3 class="font-semibold text-gray-900">{{ $displayName }}</h3>
-                    <p class="text-xs text-gray-500">
-                        @if($this->conversation->type === 'group')
-                            {{ $this->conversation->participants->count() }} participants
-                        @elseif($this->conversation->type === 'entity')
-                            {{ ucfirst($this->conversation->entity_type) }} #{{ $this->conversation->entity_id }}
-                        @else
-                            Direct message
-                        @endif
-                    </p>
-                </div>
+                
+                {{-- Meeting Button --}}
+                <button 
+                    wire:click="startMeeting"
+                    class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                    title="Join video meeting"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Join Meeting
+                </button>
             </div>
         </div>
+
+        {{-- Meeting Notification (temporary) --}}
+        @if($meetingNotification)
+            <div 
+                class="mx-4 mt-4"
+                x-data="{ show: true }"
+                x-init="setTimeout(() => { show = false; $wire.dismissMeetingNotification(); }, 30000)"
+                x-show="show"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+            >
+                <div class="bg-purple-50 border border-purple-200 rounded-xl px-4 py-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-purple-900">
+                                    <span class="font-semibold">{{ $meetingNotification['starter_name'] }}</span>
+                                    started a meeting
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button 
+                                wire:click="joinMeeting"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                                </svg>
+                                Join
+                            </button>
+                            <button 
+                                @click="show = false; $wire.dismissMeetingNotification()"
+                                class="p-1 text-purple-400 hover:text-purple-600 rounded"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         {{-- Messages --}}
         <div 
             id="messages-container"
             class="flex-1 overflow-y-auto p-4 space-y-4"
-            x-data
-            x-init="$nextTick(() => $el.scrollTop = $el.scrollHeight)"
-            x-effect="$el.scrollTop = $el.scrollHeight"
+            x-data="{ 
+                scrollToBottom() {
+                    this.$el.scrollTop = this.$el.scrollHeight;
+                }
+            }"
+            x-init="$nextTick(() => scrollToBottom())"
+            @scroll-to-bottom.window="$nextTick(() => scrollToBottom())"
         >
             @forelse($messages as $message)
+                {{-- Regular Message --}}
                 <div class="flex {{ $message['is_mine'] ? 'justify-end' : 'justify-start' }}">
                     <div class="max-w-[70%] {{ $message['is_mine'] ? 'order-2' : 'order-1' }}">
                         @if(!$message['is_mine'])
@@ -99,4 +165,17 @@
             </div>
         </div>
     @endif
+
+    {{-- JavaScript for meeting and scroll --}}
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('openMeeting', ({ url }) => {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            });
+            
+            Livewire.on('scrollToBottom', () => {
+                window.dispatchEvent(new CustomEvent('scroll-to-bottom'));
+            });
+        });
+    </script>
 </div>

@@ -1,4 +1,4 @@
-.PHONY: init build rebuild dev prod install migrate rollback seed fresh backup pgmyadmin restart stop destroy
+.PHONY: init build rebuild dev prod install migrate rollback seed fresh backup pgmyadmin restart stop destroy jitsi jitsi-stop jitsi-restart jitsi-logs jitsi-reset
 
 init:
 	cp -n .env.example .env || true
@@ -55,3 +55,27 @@ stop:
 
 destroy:
 	@read -p "Remove containers and volumes? [y/N] " ans && ([ "$$ans" = "y" ] || [ "$$ans" = "Y" ]) && docker compose down -v || true
+
+# Jitsi Meet - Video conferencing
+jitsi:
+	docker compose up -d prosody jicofo jvb jitsi-web
+	@echo "Jitsi Meet available at http://localhost:$$(grep '^JITSI_PORT=' .env 2>/dev/null | cut -d= -f2 || echo 8443)"
+
+jitsi-stop:
+	docker compose stop prosody jicofo jvb jitsi-web
+
+jitsi-restart:
+	docker compose restart prosody jicofo jvb jitsi-web
+
+jitsi-logs:
+	docker compose logs -f prosody jicofo jvb jitsi-web
+
+jitsi-reset:
+	@read -p "Reset Jitsi config? This will remove all Jitsi settings. [y/N] " ans && \
+	([ "$$ans" = "y" ] || [ "$$ans" = "Y" ]) && \
+	docker compose stop prosody jicofo jvb jitsi-web && \
+	docker compose rm -f prosody jicofo jvb jitsi-web && \
+	rm -rf docker/jitsi/prosody/config docker/jitsi/jicofo docker/jitsi/jvb docker/jitsi/web/.jitsi-meet-cfg 2>/dev/null; \
+	mkdir -p docker/jitsi/web docker/jitsi/prosody/config docker/jitsi/prosody/prosody-plugins-custom docker/jitsi/jicofo docker/jitsi/jvb docker/jitsi/transcripts && \
+	docker compose up -d prosody jicofo jvb jitsi-web && \
+	echo "Jitsi reset complete" || true

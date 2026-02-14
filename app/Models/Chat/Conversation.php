@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Str;
 
 class Conversation extends Model
 {
     protected $fillable = [
+        'name',
         'type',
         'entity_type',
         'entity_id',
+        'meeting_token',
     ];
 
     protected $casts = [
@@ -24,6 +27,48 @@ class Conversation extends Model
     public const TYPE_DIRECT = 'direct';
     public const TYPE_GROUP = 'group';
     public const TYPE_ENTITY = 'entity';
+
+    protected static function booted(): void
+    {
+        static::creating(function (Conversation $conversation) {
+            if (!$conversation->meeting_token) {
+                $conversation->meeting_token = Str::random(32);
+            }
+        });
+    }
+
+    public function getJitsiUrl(?string $displayName = null): string
+    {
+        $roomId = 'kaizen-' . $this->id . '-' . $this->meeting_token;
+        $jitsiHost = config('services.jitsi.host', 'http://localhost:8443');
+        
+        $url = rtrim($jitsiHost, '/') . '/' . $roomId;
+        
+        // Add user display name if provided
+        if ($displayName) {
+            $encodedName = rawurlencode($displayName);
+            $url .= "#userInfo.displayName=\"{$encodedName}\"";
+        }
+        
+        return $url;
+    }
+
+    public function getDisplayName(int $excludeTeamMemberId): string
+    {
+        // If conversation has a name, use it
+        if ($this->name) {
+            return $this->name;
+        }
+
+        // Otherwise, use participant names (existing behavior)
+        $otherParticipants = $this->participants->where('id', '!=', $excludeTeamMemberId);
+        
+        if ($this->type === self::TYPE_DIRECT) {
+            return $otherParticipants->first()?->name ?? 'Unknown';
+        }
+        
+        return $otherParticipants->pluck('name')->join(', ');
+    }
 
     public function participants(): BelongsToMany
     {
@@ -89,23 +134,33 @@ class Conversation extends Model
             ->first();
     }
 
-    public static function findOrCreateDirect(int $teamMember1Id, int $teamMember2Id): self
+    public static function findOrCreateDirect(int $teamMember1Id, int $teamMember2Id, ?string $name = null): self
     {
         $existing = static::findDirectBetween($teamMember1Id, $teamMember2Id);
 
         if ($existing) {
+            // Update name if provided and conversation doesn't have one
+            if ($name && !$existing->name) {
+                $existing->update(['name' => $name]);
+            }
             return $existing;
         }
 
-        $conversation = static::create(['type' => self::TYPE_DIRECT]);
+        $conversation = static::create([
+            'type' => self::TYPE_DIRECT,
+            'name' => $name,
+        ]);
         $conversation->participants()->attach([$teamMember1Id, $teamMember2Id]);
 
         return $conversation;
     }
 
-    public static function createGroup(array $teamMemberIds): self
+    public static function createGroup(array $teamMemberIds, ?string $name = null): self
     {
-        $conversation = static::create(['type' => self::TYPE_GROUP]);
+        $conversation = static::create([
+            'type' => self::TYPE_GROUP,
+            'name' => $name,
+        ]);
         $conversation->participants()->attach($teamMemberIds);
 
         return $conversation;

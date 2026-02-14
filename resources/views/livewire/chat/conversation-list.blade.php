@@ -1,4 +1,4 @@
-<div class="flex flex-col h-full" wire:poll.3s>
+<div class="flex flex-col h-full" wire:poll.10s>
     {{-- Header --}}
     <div class="p-4 border-b border-gray-200">
         <div class="flex items-center justify-between">
@@ -19,10 +19,7 @@
     <div class="flex-1 overflow-y-auto">
         @forelse($this->conversations as $conversation)
             @php
-                $otherParticipants = $conversation->participants->where('id', '!=', auth()->id());
-                $displayName = $conversation->type === 'direct' 
-                    ? $otherParticipants->first()?->name ?? 'Unknown'
-                    : $otherParticipants->pluck('name')->join(', ');
+                $displayName = $conversation->getDisplayName(auth()->id());
                 $unreadCount = $conversation->unreadCountFor(auth()->id());
             @endphp
             <button
@@ -106,14 +103,30 @@
                         </div>
                     </div>
 
-                    <div class="p-4">
-                        {{-- Search --}}
-                        <input
-                            type="text"
-                            wire:model.live.debounce.300ms="searchUsers"
-                            placeholder="Search team members..."
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        >
+                    <div class="p-4 space-y-4">
+                        {{-- Conversation Name (optional) --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Conversation name <span class="text-gray-400">(optional)</span>
+                            </label>
+                            <input
+                                type="text"
+                                wire:model="conversationName"
+                                placeholder="e.g., Project Alpha Team"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                        </div>
+
+                        {{-- Search Members --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Add members</label>
+                            <input
+                                type="text"
+                                wire:model.live.debounce.300ms="searchUsers"
+                                placeholder="Search team members..."
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                        </div>
 
                         {{-- Selected Users --}}
                         @if(count($selectedUsers) > 0)

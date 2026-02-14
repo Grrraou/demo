@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Dependencies (installed in container)
+/vendor
+/node_modules
+
+# Build artifacts
+/public/build
+/public/hot
+
+# Storage (runtime data)
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+
+# Environment
+.env
+.env.backup
+.env.production
+
+# Jitsi config (created by containers with different permissions)
+/docker/jitsi/prosody/config
+/docker/jitsi/jicofo
+/docker/jitsi/jvb
+/docker/jitsi/web/config
+/docker/jitsi/transcripts
+
+# Other
+*.log
+.DS_Store
+Thumbs.db

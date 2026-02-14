@@ -14,6 +14,7 @@ class ConversationList extends Component
     public bool $showNewChatModal = false;
     public string $searchUsers = '';
     public array $selectedUsers = [];
+    public string $conversationName = '';
 
     #[On('conversationSelected')]
     public function setActive(?int $conversationId): void
@@ -38,6 +39,7 @@ class ConversationList extends Component
         $this->showNewChatModal = true;
         $this->searchUsers = '';
         $this->selectedUsers = [];
+        $this->conversationName = '';
     }
 
     public function closeNewChat(): void
@@ -45,6 +47,7 @@ class ConversationList extends Component
         $this->showNewChatModal = false;
         $this->searchUsers = '';
         $this->selectedUsers = [];
+        $this->conversationName = '';
     }
 
     public function toggleUser(int $userId): void
@@ -63,13 +66,14 @@ class ConversationList extends Component
         }
 
         $currentUserId = Auth::id();
+        $name = trim($this->conversationName) ?: null;
 
         if (count($this->selectedUsers) === 1) {
             // Direct conversation
-            $conversation = Conversation::findOrCreateDirect($currentUserId, $this->selectedUsers[0]);
+            $conversation = Conversation::findOrCreateDirect($currentUserId, $this->selectedUsers[0], $name);
         } else {
             // Group conversation
-            $conversation = Conversation::createGroup([...$this->selectedUsers, $currentUserId]);
+            $conversation = Conversation::createGroup([...$this->selectedUsers, $currentUserId], $name);
         }
 
         $this->closeNewChat();

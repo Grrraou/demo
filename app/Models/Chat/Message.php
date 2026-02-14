@@ -12,11 +12,13 @@ class Message extends Model
         'conversation_id',
         'team_member_id',
         'body',
+        'meeting_id',
     ];
 
     protected $casts = [
         'conversation_id' => 'integer',
         'team_member_id' => 'integer',
+        'meeting_id' => 'integer',
     ];
 
     public function conversation(): BelongsTo
@@ -27,5 +29,15 @@ class Message extends Model
     public function sender(): BelongsTo
     {
         return $this->belongsTo(TeamMember::class, 'team_member_id');
+    }
+
+    public function meeting(): BelongsTo
+    {
+        return $this->belongsTo(Meeting::class);
+    }
+
+    public function isMeetingMessage(): bool
+    {
+        return $this->meeting_id !== null;
     }
 }
