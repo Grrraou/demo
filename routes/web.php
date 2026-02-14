@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\Admin\AdminCompanyController;
 use App\Http\Controllers\Web\Admin\AdminTeamMemberController;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\Blog\ArticleController as BlogArticleController;
+use App\Http\Controllers\Web\CalendarController;
 use App\Http\Controllers\Web\ChatController;
 use App\Http\Controllers\Web\Customers\CustomerCompanyController;
 use App\Http\Controllers\Web\Customers\CustomerContactController;
@@ -33,6 +34,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Chat
     Route::get('/talk', [ChatController::class, 'index'])->name('chat.index');
+
+    // Calendar
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::middleware(['view.inventory'])->prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/products', [InventoryProductController::class, 'index'])->name('products.index');

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             InventorySeeder::class,
             SalesSeeder::class,
             LeadSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }

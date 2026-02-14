@@ -97,6 +97,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <a href="{{ route('calendar.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">📅 Calendar</a>
                             <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">💬 Talk</a>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                                 <div class="relative group">
