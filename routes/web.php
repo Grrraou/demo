@@ -70,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::prefix('customers')->name('customers.')->group(function () {
-        Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
+    // Customers routes with view/edit permissions
+    Route::middleware(['view.customers'])->prefix('customers')->name('customers.')->group(function () {
         Route::get('/companies', [CustomerCompanyController::class, 'index'])->name('companies.index');
         Route::get('/companies/{customerCompany}', [CustomerCompanyController::class, 'show'])->name('companies.show');
         Route::get('/contacts', [CustomerContactController::class, 'index'])->name('contacts.index');
@@ -84,36 +84,50 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::prefix('sales')->name('sales.')->group(function () {
+    // Leads routes (separate from customers for flexibility)
+    Route::middleware(['view.leads'])->prefix('customers')->name('customers.')->group(function () {
+        Route::get('/leads', [LeadController::class, 'index'])->name('leads.index');
+    });
+
+    // Sales routes with view/edit permissions
+    Route::middleware(['view.sales'])->prefix('sales')->name('sales.')->group(function () {
+        // View-only routes
         Route::get('/quotes', [SalesQuoteController::class, 'index'])->name('quotes.index');
-        Route::get('/quotes/create', [SalesQuoteController::class, 'create'])->name('quotes.create');
-        Route::post('/quotes', [SalesQuoteController::class, 'store'])->name('quotes.store');
         Route::get('/quotes/{quote}/pdf', [SalesPdfController::class, 'quote'])->name('quotes.pdf');
         Route::get('/quotes/{quote}', [SalesQuoteController::class, 'show'])->name('quotes.show');
-        Route::get('/quotes/{quote}/edit', [SalesQuoteController::class, 'edit'])->name('quotes.edit');
-        Route::put('/quotes/{quote}', [SalesQuoteController::class, 'update'])->name('quotes.update');
 
         Route::get('/orders', [SalesOrderController::class, 'index'])->name('orders.index');
-        Route::get('/orders/create', [SalesOrderController::class, 'create'])->name('orders.create');
-        Route::post('/orders', [SalesOrderController::class, 'store'])->name('orders.store');
         Route::get('/orders/{order}/pdf', [SalesPdfController::class, 'order'])->name('orders.pdf');
         Route::get('/orders/{order}', [SalesOrderController::class, 'show'])->name('orders.show');
-        Route::get('/orders/{order}/edit', [SalesOrderController::class, 'edit'])->name('orders.edit');
-        Route::put('/orders/{order}', [SalesOrderController::class, 'update'])->name('orders.update');
 
         Route::get('/deliveries', [SalesDeliveryController::class, 'index'])->name('deliveries.index');
-        Route::get('/deliveries/create', [SalesDeliveryController::class, 'create'])->name('deliveries.create');
-        Route::post('/deliveries', [SalesDeliveryController::class, 'store'])->name('deliveries.store');
         Route::get('/deliveries/{delivery}/pdf', [SalesPdfController::class, 'delivery'])->name('deliveries.pdf');
         Route::get('/deliveries/{delivery}', [SalesDeliveryController::class, 'show'])->name('deliveries.show');
 
         Route::get('/invoices', [SalesInvoiceController::class, 'index'])->name('invoices.index');
-        Route::get('/invoices/create', [SalesInvoiceController::class, 'create'])->name('invoices.create');
-        Route::post('/invoices', [SalesInvoiceController::class, 'store'])->name('invoices.store');
         Route::get('/invoices/{invoice}/pdf', [SalesPdfController::class, 'invoice'])->name('invoices.pdf');
         Route::get('/invoices/{invoice}', [SalesInvoiceController::class, 'show'])->name('invoices.show');
-        Route::get('/invoices/{invoice}/edit', [SalesInvoiceController::class, 'edit'])->name('invoices.edit');
-        Route::put('/invoices/{invoice}', [SalesInvoiceController::class, 'update'])->name('invoices.update');
+
+        // Edit routes
+        Route::middleware(['edit.sales'])->group(function () {
+            Route::get('/quotes/create', [SalesQuoteController::class, 'create'])->name('quotes.create');
+            Route::post('/quotes', [SalesQuoteController::class, 'store'])->name('quotes.store');
+            Route::get('/quotes/{quote}/edit', [SalesQuoteController::class, 'edit'])->name('quotes.edit');
+            Route::put('/quotes/{quote}', [SalesQuoteController::class, 'update'])->name('quotes.update');
+
+            Route::get('/orders/create', [SalesOrderController::class, 'create'])->name('orders.create');
+            Route::post('/orders', [SalesOrderController::class, 'store'])->name('orders.store');
+            Route::get('/orders/{order}/edit', [SalesOrderController::class, 'edit'])->name('orders.edit');
+            Route::put('/orders/{order}', [SalesOrderController::class, 'update'])->name('orders.update');
+
+            Route::get('/deliveries/create', [SalesDeliveryController::class, 'create'])->name('deliveries.create');
+            Route::post('/deliveries', [SalesDeliveryController::class, 'store'])->name('deliveries.store');
+
+            Route::get('/invoices/create', [SalesInvoiceController::class, 'create'])->name('invoices.create');
+            Route::post('/invoices', [SalesInvoiceController::class, 'store'])->name('invoices.store');
+            Route::get('/invoices/{invoice}/edit', [SalesInvoiceController::class, 'edit'])->name('invoices.edit');
+            Route::put('/invoices/{invoice}', [SalesInvoiceController::class, 'update'])->name('invoices.update');
+        });
     });
 
     Route::middleware(['manage.articles'])->prefix('blog')->name('blog.')->group(function () {

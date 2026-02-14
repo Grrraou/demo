@@ -92,4 +92,50 @@ class TeamMember extends Authenticatable
         return $this->roles()->where('slug', 'admin')->exists()
             || $this->hasPermission('edit.inventory');
     }
+
+    // Sales permissions
+    public function canViewSales(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.sales');
+    }
+
+    public function canEditSales(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.sales');
+    }
+
+    // Customer permissions
+    public function canViewCustomers(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.customers');
+    }
+
+    // Leads permissions
+    public function canViewLeads(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.leads');
+    }
+
+    public function canEditLeads(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.leads');
+    }
+
+    // Calendar permissions
+    public function canViewCalendar(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.calendar');
+    }
+
+    public function canEditCalendar(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.calendar');
+    }
 }

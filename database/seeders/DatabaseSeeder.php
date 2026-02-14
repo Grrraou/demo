@@ -10,9 +10,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DemoTeamMembersSeeder::class,
+            // Permission seeders
             EditCustomersPermissionSeeder::class,
+            CustomersPermissionSeeder::class,
             BlogPermissionSeeder::class,
             InventoryPermissionSeeder::class,
+            SalesPermissionSeeder::class,
+            CalendarPermissionSeeder::class,
+            // Data seeders
             OwnedCompaniesSeeder::class,
             CustomerCompaniesSeeder::class,
             BlogArticlesSeeder::class,

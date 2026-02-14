@@ -8,12 +8,14 @@
                 <span>Show Won/Lost</span>
             </label>
         </div>
-        <button wire:click="openCreateModal" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            New Lead
-        </button>
+        @if($canEdit)
+            <button wire:click="openCreateModal" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                New Lead
+            </button>
+        @endif
     </div>
 
     <!-- Kanban Board -->
@@ -42,23 +44,27 @@
                     >
                         @forelse($leads[$status] ?? [] as $index => $lead)
                             <div 
-                                class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 cursor-move hover:shadow-md transition group"
-                                draggable="true"
+                                class="bg-white rounded-lg shadow-sm border border-gray-200 p-3 {{ $canEdit ? 'cursor-move' : '' }} hover:shadow-md transition group"
+                                draggable="{{ $canEdit ? 'true' : 'false' }}"
+                                @if($canEdit)
                                 x-on:dragstart="onDragStart($event, {{ $lead['id'] }}, '{{ $status }}', {{ $index }})"
                                 x-on:dragend="onDragEnd($event)"
+                                @endif
                                 data-lead-id="{{ $lead['id'] }}"
                                 data-position="{{ $index }}"
                             >
                                 <div class="flex items-start justify-between gap-2">
                                     <h4 class="font-medium text-gray-900 text-sm">{{ $lead['name'] }}</h4>
-                                    <button 
-                                        wire:click="openEditModal({{ $lead['id'] }})"
-                                        class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-gray-600 transition"
-                                    >
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                        </svg>
-                                    </button>
+                                    @if($canEdit)
+                                        <button 
+                                            wire:click="openEditModal({{ $lead['id'] }})"
+                                            class="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-gray-600 transition"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                            </svg>
+                                        </button>
+                                    @endif
                                 </div>
                                 
                                 @if($lead['company_name'])

@@ -70,6 +70,9 @@ class LeadKanban extends Component
 
     public function openCreateModal(): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
         $this->resetForm();
         $this->showCreateModal = true;
     }
@@ -82,6 +85,10 @@ class LeadKanban extends Component
 
     public function openEditModal(int $leadId): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
+
         $lead = Lead::find($leadId);
         if (!$lead) return;
 
@@ -118,6 +125,10 @@ class LeadKanban extends Component
 
     public function createLead(): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
+
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -155,6 +166,9 @@ class LeadKanban extends Component
 
     public function updateLead(): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
         if (!$this->editingLeadId) return;
 
         $this->validate([
@@ -187,6 +201,9 @@ class LeadKanban extends Component
 
     public function deleteLead(): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
         if (!$this->editingLeadId) return;
 
         Lead::destroy($this->editingLeadId);
@@ -197,6 +214,10 @@ class LeadKanban extends Component
     #[On('lead-moved')]
     public function moveLead(int $leadId, string $newStatus, int $newPosition): void
     {
+        if (!Auth::user()->canEditLeads()) {
+            return;
+        }
+
         $lead = Lead::find($leadId);
         if (!$lead) return;
 
@@ -251,10 +272,16 @@ class LeadKanban extends Component
         return TeamMember::orderBy('name')->get(['id', 'name']);
     }
 
+    public function getCanEditProperty(): bool
+    {
+        return Auth::user()->canEditLeads();
+    }
+
     public function render()
     {
         return view('livewire.leads.lead-kanban', [
             'statuses' => $this->showWonLost ? Lead::STATUSES : Lead::getActiveStatuses(),
+            'canEdit' => $this->canEdit,
         ]);
     }
 }

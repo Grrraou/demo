@@ -23,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureTeamMemberIsAdmin::class,
             'edit.customers' => \App\Http\Middleware\EnsureTeamMemberCanEditCustomers::class,
+            'view.customers' => \App\Http\Middleware\EnsureTeamMemberCanViewCustomers::class,
+            'view.leads' => \App\Http\Middleware\EnsureTeamMemberCanViewLeads::class,
+            'edit.leads' => \App\Http\Middleware\EnsureTeamMemberCanEditLeads::class,
+            'view.sales' => \App\Http\Middleware\EnsureTeamMemberCanViewSales::class,
+            'edit.sales' => \App\Http\Middleware\EnsureTeamMemberCanEditSales::class,
             'manage.articles' => \App\Http\Middleware\EnsureTeamMemberCanManageArticles::class,
             'view.inventory' => \App\Http\Middleware\EnsureTeamMemberCanViewInventory::class,
             'edit.inventory' => \App\Http\Middleware\EnsureTeamMemberCanEditInventory::class,
