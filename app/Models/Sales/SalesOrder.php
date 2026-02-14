@@ -16,13 +16,19 @@ class SalesOrder extends Model
 
     protected $table = 'sales_orders';
 
-    protected $fillable = ['quote_id', 'customer_company_id', 'number', 'status', 'order_date', 'notes'];
+    protected $fillable = [
+        'quote_id', 'customer_company_id', 'number', 'status', 'order_date', 'notes',
+        'currency_code', 'subtotal', 'tax_total', 'total',
+    ];
 
     protected function casts(): array
     {
         return [
             'order_date' => 'date',
             'status' => OrderStatus::class,
+            'subtotal' => 'decimal:2',
+            'tax_total' => 'decimal:2',
+            'total' => 'decimal:2',
         ];
     }
 

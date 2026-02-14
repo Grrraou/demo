@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\Sales\InvoiceController as SalesInvoiceController;
 use App\Http\Controllers\Web\Sales\PdfController as SalesPdfController;
 use App\Http\Controllers\Web\Sales\QuoteController as SalesQuoteController;
 use App\Http\Controllers\Web\Sales\SalesOrderController as SalesOrderController;
+use App\Http\Controllers\Web\Accounting\AccountingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -140,6 +141,26 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/articles/{article}/publish', [BlogArticleController::class, 'publish'])->name('articles.publish');
         Route::post('/articles/{article}/unpublish', [BlogArticleController::class, 'unpublish'])->name('articles.unpublish');
         Route::delete('/articles/{article}', [BlogArticleController::class, 'destroy'])->name('articles.destroy');
+    });
+
+    // Accounting routes
+    Route::middleware(['view.accounting'])->prefix('accounting')->name('accounting.')->group(function () {
+        Route::get('/chart-of-accounts', [AccountingController::class, 'chartOfAccounts'])->name('chart-of-accounts');
+        Route::get('/tax-rates', [AccountingController::class, 'taxRates'])->name('tax-rates');
+        Route::get('/journal-entries', [AccountingController::class, 'journalEntries'])->name('journal-entries');
+        Route::get('/journal-entries/create', function () {
+            return view('accounting.journal-entry-form');
+        })->name('journal-entry.create')->middleware('edit.accounting');
+        Route::get('/journal-entries/{entry}/edit', function ($entry) {
+            return view('accounting.journal-entry-form', ['entryId' => $entry]);
+        })->name('journal-entry.edit')->middleware('edit.accounting');
+
+        // Reports
+        Route::get('/reports/trial-balance', [AccountingController::class, 'trialBalance'])->name('reports.trial-balance');
+        Route::get('/reports/general-ledger', [AccountingController::class, 'generalLedger'])->name('reports.general-ledger');
+
+        // Admin routes (fiscal years, settings)
+        Route::get('/fiscal-years', [AccountingController::class, 'fiscalYears'])->name('fiscal-years');
     });
 });
 

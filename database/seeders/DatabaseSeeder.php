@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
             InventoryPermissionSeeder::class,
             SalesPermissionSeeder::class,
             CalendarPermissionSeeder::class,
+            AccountingPermissionSeeder::class,
+            // Accounting data seeders
+            AccountingCurrencySeeder::class,
+            AccountingCountryConfigSeeder::class,
             // Data seeders
             OwnedCompaniesSeeder::class,
             CustomerCompaniesSeeder::class,
@@ -25,6 +29,8 @@ class DatabaseSeeder extends Seeder
             SalesSeeder::class,
             LeadSeeder::class,
             EventSeeder::class,
+            // Combined Accounting + Sales data seeder
+            AccountingDataSeeder::class,
         ]);
     }
 }

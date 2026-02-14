@@ -2,6 +2,7 @@
 
 namespace App\Models\Sales;
 
+use App\Models\Accounting\TaxRate;
 use App\Models\Inventory\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,13 +12,19 @@ class SalesOrderItem extends Model
 {
     protected $table = 'sales_order_items';
 
-    protected $fillable = ['sales_order_id', 'product_id', 'description', 'quantity', 'unit_price'];
+    protected $fillable = [
+        'sales_order_id', 'product_id', 'description', 'quantity', 'unit_price',
+        'tax_rate_id', 'tax_amount', 'subtotal', 'line_total',
+    ];
 
     protected function casts(): array
     {
         return [
             'quantity' => 'decimal:4',
             'unit_price' => 'decimal:2',
+            'tax_amount' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+            'line_total' => 'decimal:2',
         ];
     }
 
@@ -34,6 +41,11 @@ class SalesOrderItem extends Model
     public function deliveryItems(): HasMany
     {
         return $this->hasMany(DeliveryItem::class, 'sales_order_item_id');
+    }
+
+    public function taxRate(): BelongsTo
+    {
+        return $this->belongsTo(TaxRate::class);
     }
 
     public function getLineTotalAttribute(): float

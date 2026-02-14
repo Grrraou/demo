@@ -31,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'manage.articles' => \App\Http\Middleware\EnsureTeamMemberCanManageArticles::class,
             'view.inventory' => \App\Http\Middleware\EnsureTeamMemberCanViewInventory::class,
             'edit.inventory' => \App\Http\Middleware\EnsureTeamMemberCanEditInventory::class,
+            'view.accounting' => \App\Http\Middleware\EnsureTeamMemberCanViewAccounting::class,
+            'edit.accounting' => \App\Http\Middleware\EnsureTeamMemberCanEditAccounting::class,
             'current.company' => \App\Http\Middleware\EnsureCurrentOwnedCompany::class,
         ]);
         $middleware->web(append: [\App\Http\Middleware\EnsureCurrentOwnedCompany::class]);

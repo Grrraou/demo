@@ -138,4 +138,29 @@ class TeamMember extends Authenticatable
         return $this->roles()->where('slug', 'admin')->exists()
             || $this->hasPermission('edit.calendar');
     }
+
+    // Accounting permissions
+    public function canViewAccounting(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('view.accounting');
+    }
+
+    public function canEditAccounting(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('edit.accounting');
+    }
+
+    public function canClosePeriods(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('close.periods');
+    }
+
+    public function canAdminAccounting(): bool
+    {
+        return $this->roles()->where('slug', 'admin')->exists()
+            || $this->hasPermission('admin.accounting');
+    }
 }

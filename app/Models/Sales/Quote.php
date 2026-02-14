@@ -17,13 +17,19 @@ class Quote extends Model
 
     protected $table = 'sales_quotes';
 
-    protected $fillable = ['customer_company_id', 'number', 'status', 'valid_until', 'notes'];
+    protected $fillable = [
+        'customer_company_id', 'number', 'status', 'valid_until', 'notes',
+        'currency_code', 'subtotal', 'tax_total', 'total',
+    ];
 
     protected function casts(): array
     {
         return [
             'valid_until' => 'date',
             'status' => QuoteStatus::class,
+            'subtotal' => 'decimal:2',
+            'tax_total' => 'decimal:2',
+            'total' => 'decimal:2',
         ];
     }
 

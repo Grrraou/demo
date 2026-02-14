@@ -105,6 +105,28 @@
                                     </div>
                                 </div>
                             @endif
+                            @if (auth()->user()->canViewAccounting())
+                                <div class="relative group">
+                                    <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                        🧮 Accounting
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
+                                        <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[180px]">
+                                            <a href="{{ route('accounting.chart-of-accounts') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📊 Chart of Accounts</a>
+                                            <a href="{{ route('accounting.journal-entries') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📝 Journal Entries</a>
+                                            <a href="{{ route('accounting.tax-rates') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">💵 Tax Rates</a>
+                                            <div class="border-t border-gray-100 my-1"></div>
+                                            <a href="{{ route('accounting.reports.trial-balance') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📈 Trial Balance</a>
+                                            <a href="{{ route('accounting.reports.general-ledger') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📖 General Ledger</a>
+                                            @if (auth()->user()->canAdminAccounting())
+                                                <div class="border-t border-gray-100 my-1"></div>
+                                                <a href="{{ route('accounting.fiscal-years') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📅 Fiscal Years</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <a href="{{ route('calendar.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">📅 Calendar</a>
                             <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">💬 Talk</a>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
