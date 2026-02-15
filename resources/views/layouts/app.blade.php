@@ -129,6 +129,37 @@
                             @endif
                             <a href="{{ route('calendar.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">📅 Calendar</a>
                             <a href="{{ route('chat.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">💬 Talk</a>
+                            <div class="relative group">
+                                <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">
+                                    📚 Docs
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div class="absolute right-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-40">
+                                    <div class="bg-white rounded-md shadow-lg border border-gray-200 py-1 min-w-[200px]">
+                                        <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">📖 User Guides</div>
+                                        <a href="{{ route('docs.user.getting-started') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🚀 Getting Started</a>
+                                        <a href="{{ route('docs.user.accounting') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🧮 Accounting</a>
+                                        <a href="{{ route('docs.user.inventory') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📦 Inventory</a>
+                                        <a href="{{ route('docs.user.sales') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">💰 Sales</a>
+                                        <a href="{{ route('docs.user.customers') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">👥 Customers</a>
+                                        <a href="{{ route('docs.user.chat') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">💬 Chat</a>
+                                        <a href="{{ route('docs.user.calendar') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📅 Calendar</a>
+                                        <a href="{{ route('docs.user.leads') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🎯 Leads</a>
+                                        <a href="{{ route('docs.user.faq') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">❓ FAQ</a>
+                                        <div class="border-t border-gray-100 my-1"></div>
+                                        <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">💻 Developer Docs</div>
+                                        <a href="{{ route('docs.developer.architecture') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🏗️ Architecture</a>
+                                        <a href="{{ route('docs.developer.api') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔌 API</a>
+                                        <a href="{{ route('docs.developer.database') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🗄️ Database</a>
+                                        <a href="{{ route('docs.developer.auth') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🔐 Security</a>
+                                        <a href="{{ route('docs.developer.modules') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🧩 Modules</a>
+                                        <a href="{{ route('docs.developer.testing') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🧪 Testing</a>
+                                        <a href="{{ route('docs.developer.deployment') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">🚀 Deployment</a>
+                                        <div class="border-t border-gray-100 my-1"></div>
+                                        <a href="{{ route('docs.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📋 All Docs</a>
+                                    </div>
+                                </div>
+                            </div>
                             @if (auth()->user()->roles()->where('slug', 'admin')->exists())
                                 <div class="relative group">
                                     <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900 inline-flex items-center gap-1">

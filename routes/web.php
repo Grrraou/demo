@@ -23,6 +23,7 @@ use App\Http\Controllers\Web\Sales\PdfController as SalesPdfController;
 use App\Http\Controllers\Web\Sales\QuoteController as SalesQuoteController;
 use App\Http\Controllers\Web\Sales\SalesOrderController as SalesOrderController;
 use App\Http\Controllers\Web\Accounting\AccountingController;
+use App\Http\Controllers\Web\DocumentationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -32,6 +33,36 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/current-company', [OwnedCompanySwitchController::class, 'switch'])->name('current-company.switch');
+
+    // Documentation routes
+    Route::prefix('docs')->name('docs.')->group(function () {
+        Route::get('/', [DocumentationController::class, 'index'])->name('index');
+        Route::get('/search', [DocumentationController::class, 'search'])->name('search');
+        
+        // User documentation
+        Route::prefix('user')->name('user.')->group(function () {
+            Route::get('/getting-started', [DocumentationController::class, 'userGettingStarted'])->name('getting-started');
+            Route::get('/accounting', [DocumentationController::class, 'userAccounting'])->name('accounting');
+            Route::get('/inventory', [DocumentationController::class, 'userInventory'])->name('inventory');
+            Route::get('/sales', [DocumentationController::class, 'userSales'])->name('sales');
+            Route::get('/customers', [DocumentationController::class, 'userCustomers'])->name('customers');
+            Route::get('/chat', [DocumentationController::class, 'userChat'])->name('chat');
+            Route::get('/calendar', [DocumentationController::class, 'userCalendar'])->name('calendar');
+            Route::get('/leads', [DocumentationController::class, 'userLeads'])->name('leads');
+            Route::get('/faq', [DocumentationController::class, 'userFaq'])->name('faq');
+        });
+        
+        // Developer documentation
+        Route::prefix('developer')->name('developer.')->group(function () {
+            Route::get('/architecture', [DocumentationController::class, 'developerArchitecture'])->name('architecture');
+            Route::get('/api', [DocumentationController::class, 'developerApi'])->name('api');
+            Route::get('/database', [DocumentationController::class, 'developerDatabase'])->name('database');
+            Route::get('/auth', [DocumentationController::class, 'developerAuth'])->name('auth');
+            Route::get('/modules', [DocumentationController::class, 'developerModules'])->name('modules');
+            Route::get('/testing', [DocumentationController::class, 'developerTesting'])->name('testing');
+            Route::get('/deployment', [DocumentationController::class, 'developerDeployment'])->name('deployment');
+        });
+    });
 
     // Chat
     Route::get('/talk', [ChatController::class, 'index'])->name('chat.index');
